@@ -1,15 +1,10 @@
-// Importing combination 
-import React, {Component} from 'react'; 
-// Importing Module 
-import ReactDOM from 'react-dom'; 
+import React from 'react';
 import { connect } from 'react-redux';
-
 import { DropDownList } from '@progress/kendo-react-dropdowns';
 import { GridColumn as Column, Grid, GridToolbar } from '@progress/kendo-react-grid';
 import { Button, ButtonGroup, ToolbarItem, Toolbar } from '@progress/kendo-react-buttons';
 import { Popup } from '@progress/kendo-react-popup';
 import { Input } from '@progress/kendo-react-inputs';
-import { Dialog, DialogActionsBar } from '@progress/kendo-react-dialogs';
 
 import { TableNameHeader, ColumnNameHeader, Renderers } from './renderers.jsx';
 import { updateProfile, insertProfile } from '../data/SaveProfile.jsx';
@@ -33,8 +28,8 @@ export class FHIMProfileEditorForm extends React.Component {
             show: true,
             organizationName: '',
             implementationGuide: '',
-            templateName: '',
-            templateVersion: '',
+            profileName: '',
+            profileVersion: '',
             value: ''
         };
 
@@ -46,22 +41,16 @@ export class FHIMProfileEditorForm extends React.Component {
         this.onChange = this.onChange.bind(this);
         this.onOrganizationNameChange = this.onOrganizationNameChange.bind(this);
         this.onImplementationGuideChange = this.onImplementationGuideChange.bind(this);
-        this.onTemplateNameChange = this.onTemplateNameChange.bind(this);
-        this.onTemplateVersionChange = this.onTemplateVersionChange.bind(this);
+        this.onProfileNameChange = this.onProfileNameChange.bind(this);
+        this.onProfileVersionChange = this.onProfileVersionChange.bind(this);
     }
 
-      handleSubmit(event) {
-            alert('A name was submitted: ' + this.state.value);
-            event.preventDefault();
-      }
 
-       render() {
+    render() {
 
         const profile = [this.state.profileInEdit];
-
         this.initWidget(profile);
         const tableHeader = "Structure: " + profile[0].resource.name;
-        
 
         return (
             <div className="content-container">
@@ -92,8 +81,8 @@ export class FHIMProfileEditorForm extends React.Component {
                                 <Column headerCell={ColumnNameHeader} title="Type" field="type" editable={true} cell={TypeCell} />
                                 <Column headerCell={ColumnNameHeader} title="Usage" field="extensions" editable={true} cell={UsageDownCell} />
                             </Column>
-                        
-                       </Grid>
+                        </Grid>
+
                         <div align="left" className="k-form">
                             {this.listInputs()}
                         </div>
@@ -101,8 +90,6 @@ export class FHIMProfileEditorForm extends React.Component {
                         <div align="center" className="k-form">
                             {this.listButtons()}
                         </div>
-                        
-                         
                     </form>
 
 
@@ -111,22 +98,8 @@ export class FHIMProfileEditorForm extends React.Component {
         );
     }
 
-    profileDetails = () =>
-    {
-
-    };
-
-
     initWidget = (profile) => {
-
-        if(!profile[0].resource.snapshot.element[0].extension)
-        {
-            // Skip the first element that ususally doesn't have any extention.
-            this.state.data = profile[0].resource.snapshot.element.splice(1);
-        }
-        else{
-            this.state.data = profile[0].resource.snapshot.element;
-        }
+         this.state.data = profile[0].resource.snapshot.element;
     };
 
     listInputs = () => (
@@ -157,23 +130,23 @@ export class FHIMProfileEditorForm extends React.Component {
             <tr>
                 <Input
                     className="input-field"
-                    label="Template Name"
+                    label="Profile Name"
                     minLength={1}
                     defaultValue=''
                     required={false}
-                    name="templateName"
-                    onChange={this.onTemplateNameChange}>
+                    name="profileName"
+                    onChange={this.onProfileNameChange}>
                 </Input>
             </tr>
             <tr>
                 <Input
                     className="input-field"
-                    label="Template Version"
+                    label="Profile Version"
                     minLength={1}
                     defaultValue=''
                     required={false}
-                    name="templateVersion"
-                    onChange={this.onTemplateVersionChange}>
+                    name="profileVersion"
+                    onChange={this.onProfileVersionChange}>
                 </Input>
             </tr>
         </table>
@@ -181,30 +154,34 @@ export class FHIMProfileEditorForm extends React.Component {
     );
 
     listButtons = () => (
-       <div>
+        <table>
+            <tr>
 
-             <Button id="cancelButton" onClick={this.props.cancel}>Cancel</Button>
+                <td>
+
+                    <Button name="canceButton" onClick={this.props.cancel}>Cancel</Button>
                     &nbsp;&nbsp;
-            <Button id="updateProfieButton" onClick={this.updateProfile} primary={true}>Save</Button>
+            <Button name="updateProfieButton" onClick={this.updateProfile} primary={true}>Save</Button>
                     &nbsp;&nbsp;
-            <Button id="genProfileButton"
-                        onClick={this.generateProfile}                       
+            <Button name="genProfileButton"
+                        disabled={this.disableGenerateButton()}
+                        onClick={this.generateProfile}
                         primary={true}>Generate FHIR Profile</Button>
 
-        </div>
+                </td>
+            </tr>
+        </table>
 
     );
 
 
-    validateGenerateButton = () => {
+    disableGenerateButton = () => {
 
-        // disabled={!this.validateGenerateButton()}
-      
         if (this.state.organizationName == '' || this.state.implementationGuide == '' ||
-            this.state.templateName == '' || this.state.templateVersion == '') {
-            return false;
+            this.state.profileName == '' || this.state.profileVersion == '') {
+            return true;
         }
-        return true;
+        return false;
     };
 
 
@@ -222,51 +199,43 @@ export class FHIMProfileEditorForm extends React.Component {
     generateProfile = (e) => {
         e.preventDefault();
 
-        const errorMessage = 
-        "A new template requires an implementation guide,  a responsible organization, a template name, and a template version.";
+        this.setState({
+            searchOn: true
+        });
 
-        if(!this.validateGenerateButton())
-        {   
-            alert(errorMessage);
-            return;
-        }
         const dataItem = this.state.profileInEdit;
         insertProfile(dataItem);
         this.props.save();
     };
 
     onChange(e) {
-        e.preventDefault();       
         this.setState({ value: e.target.value });
     }
 
     onOrganizationNameChange = (e) => {
-        this.state.organizationName = e.target.value;
-      //  this.setState({ organizationName: organizationName });
-     // this.setState({ });
+
+        const organizationName = e.target.value;
+        this.setState({ organizationName: organizationName });
 
     };
 
 
     onImplementationGuideChange = (e) => {
-       
-        this.state.implementationGuide = e.target.value;
-       // this.setState({ implementationGuide: implementationGuide });
-       //this.setState({ });
-       
+
+        const implementationGuide = e.target.value;
+        this.setState({ implementationGuide: implementationGuide });
     };
 
-    onTemplateNameChange = (e) => {
-       this.state.templateName = e.target.value;
-       //this.setState({ });
-      
+    onProfileNameChange = (e) => {
+
+        const profileName = e.target.value;
+        this.setState({ profileName: profileName });
     };
 
-    onTemplateVersionChange = (e) => {
-        this.state.templateVersion = e.target.value;
-        //this.setState({ templateVersion: templateVersion });
-        //this.setState({ });
-        
+    onProfileVersionChange = (e) => {
+
+        const profileVersion = e.target.value;
+        this.setState({ profileVersion: profileVersion });
     };
 
 
