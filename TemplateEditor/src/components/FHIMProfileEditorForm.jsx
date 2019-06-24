@@ -28,8 +28,8 @@ export class FHIMProfileEditorForm extends React.Component {
             show: true,
             organizationName: '',
             implementationGuide: '',
-            profileName: '',
-            profileVersion: '',
+            templateName: '',
+            templateVersion: '',
             value: ''
         };
 
@@ -41,8 +41,8 @@ export class FHIMProfileEditorForm extends React.Component {
         this.onChange = this.onChange.bind(this);
         this.onOrganizationNameChange = this.onOrganizationNameChange.bind(this);
         this.onImplementationGuideChange = this.onImplementationGuideChange.bind(this);
-        this.onProfileNameChange = this.onProfileNameChange.bind(this);
-        this.onProfileVersionChange = this.onProfileVersionChange.bind(this);
+        this.onTemplateNameChange = this.onTemplateNameChange.bind(this);
+        this.onTemplateVersionChange = this.onTemplateVersionChange.bind(this);
     }
 
 
@@ -130,23 +130,23 @@ export class FHIMProfileEditorForm extends React.Component {
             <tr>
                 <Input
                     className="input-field"
-                    label="Profile Name"
+                    label="Template Name"
                     minLength={1}
                     defaultValue=''
                     required={false}
-                    name="profileName"
-                    onChange={this.onProfileNameChange}>
+                    name="templateName"
+                    onChange={this.onTemplateNameChange}>
                 </Input>
             </tr>
             <tr>
                 <Input
                     className="input-field"
-                    label="Profile Version"
+                    label="Template Version"
                     minLength={1}
                     defaultValue=''
                     required={false}
-                    name="profileVersion"
-                    onChange={this.onProfileVersionChange}>
+                    name="templateVersion"
+                    onChange={this.onTemplateVersionChange}>
                 </Input>
             </tr>
         </table>
@@ -156,15 +156,13 @@ export class FHIMProfileEditorForm extends React.Component {
     listButtons = () => (
         <table>
             <tr>
-
                 <td>
-
-                    <Button name="canceButton" onClick={this.props.cancel}>Cancel</Button>
+                 <Button name="canceButton" onClick={this.props.cancel}>Cancel</Button>
                     &nbsp;&nbsp;
-            <Button name="updateProfieButton" onClick={this.updateProfile} primary={true}>Save</Button>
+                <Button name="updateProfieButton" onClick={this.updateProfile} primary={true}>Save</Button>
                     &nbsp;&nbsp;
-            <Button name="genProfileButton"
-                        disabled={this.disableGenerateButton()}
+                <Button name="genProfileButton"
+                        disabled={!this.vaidateGenerateProfile()}
                         onClick={this.generateProfile}
                         primary={true}>Generate FHIR Profile</Button>
 
@@ -175,13 +173,13 @@ export class FHIMProfileEditorForm extends React.Component {
     );
 
 
-    disableGenerateButton = () => {
+    vaidateGenerateProfile = () => {
 
         if (this.state.organizationName == '' || this.state.implementationGuide == '' ||
-            this.state.profileName == '' || this.state.profileVersion == '') {
-            return true;
+            this.state.templateName == '' || this.state.templateVersion == '') {
+            return false;
         }
-        return false;
+        return true;
     };
 
 
@@ -198,6 +196,14 @@ export class FHIMProfileEditorForm extends React.Component {
 
     generateProfile = (e) => {
         e.preventDefault();
+        const errorMessage = 
+        "A new template requires an implementation guide,  a responsible organization, a template name, and a template version.";
+
+        if(!this.vaidateGenerateProfile())
+        {   
+            alert(errorMessage);
+            return;
+        }
 
         this.setState({
             searchOn: true
@@ -226,16 +232,16 @@ export class FHIMProfileEditorForm extends React.Component {
         this.setState({ implementationGuide: implementationGuide });
     };
 
-    onProfileNameChange = (e) => {
+    onTemplateNameChange = (e) => {
 
-        const profileName = e.target.value;
-        this.setState({ profileName: profileName });
+        const templateName = e.target.value;
+        this.setState({ templateName: templateName });
     };
 
-    onProfileVersionChange = (e) => {
+    onTemplateVersionChange = (e) => {
 
-        const profileVersion = e.target.value;
-        this.setState({ profileVersion: profileVersion });
+        const templateVersion = e.target.value;
+        this.setState({ templateVersion: templateVersion });
     };
 
 
