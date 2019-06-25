@@ -1,7 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { toODataString } from '@progress/kendo-data-query';
+
+
 import {baseURL} from './properties';
+import {infoMessage, errorMessage} from   '../actions/notifications';
 
 export class StructureDefinitionsLoader extends React.Component {
     endpoint = baseURL+'?name:contains=';
@@ -11,45 +14,50 @@ export class StructureDefinitionsLoader extends React.Component {
     pending = '';
     filter = '';
 
+  
     requestDataIfNeeded = () => {
 
        
-        if (this.props.searchBy == '' || this.pending 
+        if (this.props.searchBy === '' || this.pending 
             || toODataString(this.props.dataState) === this.lastSuccess) {
             
             return;
         }
         const  url = this.endpoint+this.props.searchBy;
-        console.log("Begin Loading URL: "+url);
         this.pending = toODataString(this.props.dataState);
-
+     
         fetch(url, this.init)  
             .then(response => response.json())
             .then(json => {
-                console.log("Loading Data");
+               
+
                 this.lastSuccess = this.pending;
                 this.pending = '';
+             
                 if (toODataString(this.props.dataState) === this.lastSuccess) {
                     this.props.onDataRecieved.call(undefined, {
                         data: json.entry,
                         total: json['total']
                         
                     });
-                } else {
+                   
+                } 
+                else {
                     this.pending = '';
-                    console.log("Failed to Load Data");
+                    errorMessage("Failed to Load Data");
                     this.requestDataIfNeeded();
                 }
 
             })
-            .catch(function (err) {
-                console.log("Load Error: "+err)
-                throw err;
+            .catch(function (error) {
+                errorMessage("Element Query: "+error + ", URL: "+baseURL);
+      
             })
     }
 
     render() {
-        this.requestDataIfNeeded();
+        this.requestDataIfNeeded();   
+          
         return this.pending && <LoadingPanel />;
     }
 }
@@ -57,6 +65,7 @@ export class StructureDefinitionsLoader extends React.Component {
 
 class LoadingPanel extends React.Component {
     render() {
+       
         const loadingPanel = (
             <div >
                 <span>Loading</span>

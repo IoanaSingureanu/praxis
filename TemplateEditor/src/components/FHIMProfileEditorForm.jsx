@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { DropDownList } from '@progress/kendo-react-dropdowns';
-import { GridColumn as Column, Grid, GridToolbar } from '@progress/kendo-react-grid';
-import { Button, ButtonGroup, ToolbarItem, Toolbar } from '@progress/kendo-react-buttons';
+import { GridColumn as Column, Grid} from '@progress/kendo-react-grid';
+import { Button } from '@progress/kendo-react-buttons';
 import { Popup } from '@progress/kendo-react-popup';
 import { Input } from '@progress/kendo-react-inputs';
 
@@ -175,8 +175,8 @@ export class FHIMProfileEditorForm extends React.Component {
 
     vaidateGenerateProfile = () => {
 
-        if (this.state.organizationName == '' || this.state.implementationGuide == '' ||
-            this.state.templateName == '' || this.state.templateVersion == '') {
+        if (this.state.organizationName === '' || this.state.implementationGuide === '' ||
+            this.state.templateName === '' || this.state.templateVersion === '') {
             return false;
         }
         return true;
@@ -204,7 +204,7 @@ export class FHIMProfileEditorForm extends React.Component {
             alert(errorMessage);
             return;
         }
-
+        
         this.setState({
             searchOn: true
         });
@@ -244,41 +244,6 @@ export class FHIMProfileEditorForm extends React.Component {
         this.setState({ templateVersion: templateVersion });
     };
 
-
-    itemChange(event) {
-        const value = event.value;
-        const name = event.field;
-        if (!name) {
-            return;
-        }
-        const updatedData = this.state.data.slice();
-        const item = this.update(updatedData, event.dataItem);
-        item[name] = value;
-        this.setState({
-            data: updatedData
-        });
-    }
-
-    update(data, item, remove) {
-        let updated;
-        let index = data.findIndex(p => p === item || item.id && p.id === item.id);
-        if (index >= 0) {
-            updated = Object.assign({}, item);
-            data[index] = updated;
-        } else {
-            let id = 1;
-            data.forEach(p => { id = Math.max(p.id + 1, id); });
-            updated = Object.assign({}, item, { id: id });
-            data.unshift(updated);
-            index = 0;
-        }
-
-        if (remove) {
-            return data.splice(index, 1)[0];
-        }
-
-        return data[index];
-    }
 
     rowRender = (trElement, props) => {
 

@@ -1,18 +1,17 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { toODataString } from '@progress/kendo-data-query';
 import {baseURL} from './properties';
+import {infoMessage, errorMessage} from   '../actions/notifications';
 
 export const updateProfile = (dataItem) => {
     const id = dataItem.resource.id;
     const endpoint = baseURL + id + "?_format=json";
     const jsonObj = JSON.stringify(dataItem.resource);
 
-    console.log("Profile UPDATE: " + " Request URL:   " + endpoint);
+    /*console.log("Profile UPDATE Request URL:   " + endpoint);
     console.log("************ BEGIN JSON **********");
     console.log(jsonObj);
     console.log("********** END JSON ************");
-
+    */
+   
     fetch(endpoint, {
         method: 'PUT',
          headers: {
@@ -28,17 +27,16 @@ export const updateProfile = (dataItem) => {
     })
     .catch((error) => {
          console.log("Update Error-------",error);
+         errorMessage("Element Update: "+error + ", URL: "+baseURL);
     });
-
 }
 
 export const insertProfile = (dataItem) => {
     //POST http://hapi.fhir.org/baseR4/StructureDefinition?_format=json  
-    const id = dataItem.resource.id;
     const endpoint = baseURL+"?_format=json";
     const jsonObj = JSON.stringify(dataItem.resource);
     
-    console.log("Profile GENERATE: " + " Request URL:   " + endpoint);
+    console.log("Profile GENERATE Request URL:   " + endpoint);
     console.log("************ BEGIN JSON **********");
     console.log(jsonObj);
     console.log("********** END JSON ************");
@@ -58,19 +56,7 @@ export const insertProfile = (dataItem) => {
     })
     .catch((error) => {
          console.log("Update Error-------",error);
+         errorMessage("Element Insert: "+error + ", URL: "+baseURL);
+   
     });
 };
-
-function checkStatus(response) {
-    if (response.status >= 200 && response.status < 300) {
-        return response
-    } else {
-        var error = new Error(response.statusText)
-        error.response = response
-        throw error
-    }
-}
-const mapStateToProps = (state) => ({
-
-});
-

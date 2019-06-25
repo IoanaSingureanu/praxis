@@ -1,5 +1,5 @@
 {
-  "name": "my-app",
+  "name": "Praxis-Editor",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -16,6 +16,7 @@
     "@progress/kendo-react-inputs": "^3.2.2",
     "@progress/kendo-react-intl": "^3.1.0",
     "@progress/kendo-react-layout": "^3.1.0",
+    "@progress/kendo-react-notification": "^3.2.2",
     "@progress/kendo-react-pdf": "^3.1.0",
     "@progress/kendo-react-popup": "^3.2.2",
     "@progress/kendo-react-tooltip": "^3.2.2",
@@ -27,11 +28,14 @@
     "normalize.css": "^8.0.1",
     "numeral": "^2.0.6",
     "react": "^16.8.6",
+    "react-alert": "^5.5.0",
+    "react-confirm-alert": "^2.4.1",
     "react-dates": "^20.2.2",
     "react-dom": "^16.8.6",
     "react-redux": "^7.0.3",
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
+    "reactjs-popup": "^1.4.1",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
     "uui": "^1.0.7"

@@ -1,16 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Input, NumericTextBox,MaskedTextBox } from '@progress/kendo-react-inputs';
-import { GridColumn as Column, Grid, GridToolbar } from '@progress/kendo-react-grid';
-import { Button, ButtonGroup, ToolbarItem, Toolbar } from '@progress/kendo-react-buttons';
+import { Input} from '@progress/kendo-react-inputs';
+import { GridColumn as Column, Grid} from '@progress/kendo-react-grid';
+import { Button } from '@progress/kendo-react-buttons';
 import uuid from 'uuid';
 
-import { StructureDefinitionsLoader, StructureDefinitionsPost} from '../data/StructureDefinitionsLoader.jsx';
+import { StructureDefinitionsLoader} from '../data/StructureDefinitionsLoader.jsx';
 import { FHIMProfileEditorForm }      from './FHIMProfileEditorForm.jsx';
-import { TableNameHeader, ColumnNameHeader, Renderers } from './renderers.jsx';
-
-  
-let tooltip = null;
+import { ColumnNameHeader} from './renderers.jsx';
 
 export class FHIMStructureDefinitionPage extends React.Component {
 
@@ -100,12 +97,15 @@ export class FHIMStructureDefinitionPage extends React.Component {
                 </Grid>
 
                 {this.state.searchOn ? (
+                    
                     <StructureDefinitionsLoader
                         dataState={this.state.dataState}
                         onDataRecieved={this.dataRecieved}
                         searchBy={this.state.searchBy}/>) : (<p></p>)}
+                      
 
                 <br /><br />
+                 
                 {this.clearState()}
                 {this.state.profileInEdit &&
                     <FHIMProfileEditorForm dataItem={this.state.profileInEdit} save={this.save} cancel={this.cancel} />}
@@ -225,10 +225,10 @@ export class FHIMStructureDefinitionPage extends React.Component {
 
     save = () => {
 
-        const dataItem = this.state.profileInEdit;
         const profiles = this.state.structureDefinitions.data;
         this.setState({
             profiles: profiles,
+            dataItem: this.state.profileInEdit,
             profileInEdit: undefined
         });
     }
@@ -268,38 +268,6 @@ export class FHIMStructureDefinitionPage extends React.Component {
 
         return Object.assign(profile, source);
     }
-
-     rowRender=(trElement, props) => {
-        
-        
-        const dataItem = props.dataItem;
-        const profiles = this.state.structureDefinitions.data.slice();
-
-        const index = profiles.findIndex(p => p.resource.id === dataItem.resource.id);
-               
-        const even = { backgroundColor: "rgb(242, 244, 247)" };
-        const odd = { backgroundColor: "rgb(249, 251, 255)" };
-
-        const trProps = { style: index % 2  ? even : odd };
-
-
-        const peops = {
-            ...trElement.props,
-              onMouseDown: () => {
-                console.log("Mouse Down");
-            },
-            onBlur: () => {
-                console.log("Bure");
-            },
-            onFocus: () => { 
-                console.log("Focus");
-            }
-        };
-
-      
-        return React.cloneElement(trElement, { ...trProps }, trElement.props.children);
-    };
-
        
 }
 
@@ -331,15 +299,6 @@ class StructureTypeCell extends React.Component {
         );
     }
 }
-
-class TooltipContentTemplate extends React.Component {
-    render() {
-        return (
-            <a> A template for: <strong>{this.props.title}</strong></a>
-        );
-    }
-}
-
 
 const mapStateToProps = (state, props) => ({
    
