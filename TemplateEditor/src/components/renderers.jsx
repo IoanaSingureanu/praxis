@@ -56,7 +56,7 @@ export class ColumnNameHeader extends React.Component {
     render() {
         return (
             <a className="k-link" onClick={this.props.onClick}>
-                 <span style={{ color: "black" }}>{this.props.title}</span>               
+                 <span style={{ color: "black", "font-size": "14px" }}>{this.props.title}</span>               
                 {this.props.children}
             </a>
         );
@@ -67,7 +67,7 @@ export class TableNameHeader extends React.Component {
     render() {
         return (
             <a className="k-link">
-                <span style={{ color: "black", fontweight: "bold"}}>
+                <span style={{ color: "black", "font-weight": "bold", "font-size": "16px"}}>
                 {this.props.title}</span>
                 {this.props.children}
             </a>
