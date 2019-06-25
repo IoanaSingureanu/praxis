@@ -79,7 +79,7 @@ export class FHIMStructureDefinitionPage extends React.Component {
                     {...this.state.dataState}
                     {...this.state.structureDefinitions}
                     onDataStateChange={this.dataStateChange}
-                    rowHeight={15}
+                    rowHeight={12}
                     skip={this.state.skip}
                     style={{backgroundColor:"rgb(227, 231, 237)"}}
                                     
