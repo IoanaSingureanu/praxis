@@ -51,7 +51,7 @@ export const insertProfile = (dataItem) => {
     });
 };
 
-const showObject = (endpoint, item) =>
+export const showObject = (endpoint, item) =>
 {
     console.log("Profile Request URL:   " + endpoint);
     console.log("************ BEGIN JSON **********");

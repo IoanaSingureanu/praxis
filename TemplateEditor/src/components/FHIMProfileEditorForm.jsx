@@ -10,7 +10,6 @@ import { TableNameHeader, ColumnNameHeader, Renderers } from './renderers.jsx';
 import { updateProfile, insertProfile } from '../data/SaveProfile.jsx';
 
 
-
 function cloneProfile(profile) {
     return Object.assign({}, profile);
 }
@@ -60,16 +59,16 @@ export class FHIMProfileEditorForm extends React.Component {
                     position="top center"
                     align={{
                         horizontal: "center",
-                        vertical: "center"
+                        vertical:   "center"
                     }}
                     popupClass={'popup-content'} >
 
-                    <form onSubmit={this.handleSubmit}>
+                    <form onSubmit={this.handleSubmit} className="k-form">
 
                         <Grid
                             style={{ backgroundColor: "rgb(227, 231, 237)" }}
                             data={this.state.data}
-                            rowHeight={12}
+                            rowHeight={10}
                             onItemChange={this.itemChange}
                             filterable={false}
                             sortable={true}
@@ -192,15 +191,6 @@ export class FHIMProfileEditorForm extends React.Component {
 
     updateTemplate = (profile) =>
     {
-        
-        /*
-        resource {
-            "meta: {version, ..}"
-            "publisher": "Organization“
-             "implicitRules": "ImplementationGuide“
-            "name": is a concatenation of  "ClassName.Organization.ImplementationGuide.ProfileName.ProfileVersion"
-        }
-        */
         profile.resource.publisher = this.state.organizationName;
         profile.resource.implicitRules = this.state.implementationGuide;
         profile.resource.name = this.state.templateName;
@@ -254,7 +244,6 @@ export class FHIMProfileEditorForm extends React.Component {
     };
 
     onTemplateVersionChange = (e) => {
-
         const templateVersion = e.target.value;
         this.setState({ templateVersion: templateVersion });
     };
@@ -263,14 +252,10 @@ export class FHIMProfileEditorForm extends React.Component {
     rowRender = (trElement, props) => {
 
         const dataItem = props.dataItem;
-        const profiles = this.state.data.slice()
-
+        const profiles = this.state.data.slice();
         const index = profiles.findIndex(p => p.id === dataItem.id);
-
-
         const evenRow = { backgroundColor: "rgb(237, 242, 247)" };
         const oddRow = { backgroundColor: "rgb(rgb(252, 253, 255))" };
-
         const trProps = { style: index % 2 ? evenRow : oddRow };
         return React.cloneElement(trElement, { ...trProps }, trElement.props.children);
     };
