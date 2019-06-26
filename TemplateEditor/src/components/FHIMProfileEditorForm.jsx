@@ -64,7 +64,7 @@ export class FHIMProfileEditorForm extends React.Component {
                         <Grid
                             style={{ backgroundColor: "rgb(227, 231, 237)" }}
                             data={this.state.data}
-                            rowHeight={10}
+                            rowHeight={2}
                             onItemChange={this.itemChange}
                             filterable={false}
                             sortable={true}
