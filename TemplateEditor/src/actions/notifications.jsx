@@ -1,7 +1,5 @@
 import React from 'react';
 import { Notification, NotificationGroup } from '@progress/kendo-react-notification';
-import { useAlert } from 'react-alert'
-
 
 const position = {
   topLeft: { top: 70, left: 0, alignItems: 'flex-start' },

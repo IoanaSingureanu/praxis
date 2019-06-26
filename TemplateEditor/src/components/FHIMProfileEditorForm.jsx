@@ -11,8 +11,8 @@ import { updateProfile, insertProfile } from '../data/SaveProfile.jsx';
 
 
 
-function cloneProfile(product) {
-    return Object.assign({}, product);
+function cloneProfile(profile) {
+    return Object.assign({}, profile);
 }
 
 export class FHIMProfileEditorForm extends React.Component {
@@ -37,7 +37,6 @@ export class FHIMProfileEditorForm extends React.Component {
         this.cancelChanges = this.cancelChanges.bind(this);
         this.itemChange = this.itemChange.bind(this);
         this.renderers = new Renderers(this.enterEdit.bind(this), this.exitEdit.bind(this), 'inEdit');
-        const enterEdit = this.enterEdit.bind(this);
         this.onChange = this.onChange.bind(this);
         this.onOrganizationNameChange = this.onOrganizationNameChange.bind(this);
         this.onImplementationGuideChange = this.onImplementationGuideChange.bind(this);
@@ -84,15 +83,13 @@ export class FHIMProfileEditorForm extends React.Component {
                         </Grid>
 
                         <div align="left" className="k-form">
-                            {this.listInputs()}
+                            {this.genProfieInputs()}
                         </div>
 
                         <div align="center" className="k-form">
                             {this.listButtons()}
                         </div>
                     </form>
-
-
                 </Popup>
             </div>
         );
@@ -102,7 +99,7 @@ export class FHIMProfileEditorForm extends React.Component {
          this.state.data = profile[0].resource.snapshot.element;
     };
 
-    listInputs = () => (
+    genProfieInputs = () => (
 
         <table>
             <tr>
@@ -193,8 +190,26 @@ export class FHIMProfileEditorForm extends React.Component {
         this.props.save();
     };
 
+    updateTemplate = (profile) =>
+    {
+        
+        /*
+        resource {
+            "meta: {version, ..}"
+            "publisher": "Organization“
+             "implicitRules": "ImplementationGuide“
+            "name": is a concatenation of  "ClassName.Organization.ImplementationGuide.ProfileName.ProfileVersion"
+        }
+        */
+        profile.resource.publisher = this.state.organizationName;
+        profile.resource.implicitRules = this.state.implementationGuide;
+        profile.resource.name = this.state.templateName;
+        profile.resource.meta.versionId = this.templateVersion;
+        console.log("Generating profile: "+profile.resource.name);
+    }
 
     generateProfile = (e) => {
+
         e.preventDefault();
         const errorMessage = 
         "A new template requires an implementation guide,  a responsible organization, a template name, and a template version.";
@@ -204,13 +219,13 @@ export class FHIMProfileEditorForm extends React.Component {
             alert(errorMessage);
             return;
         }
-        
+        let profile =  cloneProfile(this.state.profileInEdit);
+        this.updateTemplate(profile);
         this.setState({
             searchOn: true
         });
-
-        const dataItem = this.state.profileInEdit;
-        insertProfile(dataItem);
+        
+        insertProfile(profile);
         this.props.save();
     };
 
@@ -365,7 +380,7 @@ class UsageDownCell extends React.Component {
             extension[0].valueString = e.target.value.value;
         }
         else {
-            console.log("XXXX Handle Usage Cell"); console.log("--->Handle Change: ''" +
+            console.log("Handle Usage Cell"); console.log("--->Handle Change: ''" +
 
                 this.props.field + " " + this.props.dataItem);
         }
@@ -380,7 +395,6 @@ class UsageDownCell extends React.Component {
 
     render() {
 
-        let dataValue = 'supported';
         let extension = this.props.dataItem.extension;
 
         let extensionValue = "not supported";

@@ -4,7 +4,7 @@ import { toODataString } from '@progress/kendo-data-query';
 
 
 import {baseURL} from './properties';
-import {infoMessage, errorMessage} from   '../actions/notifications';
+import {errorMessage} from   '../actions/notifications';
 
 export class StructureDefinitionsLoader extends React.Component {
     endpoint = baseURL+'?name:contains=';
@@ -44,13 +44,13 @@ export class StructureDefinitionsLoader extends React.Component {
                 } 
                 else {
                     this.pending = '';
-                    errorMessage("Failed to Load Data");
+                    errorMessage("Structure Definition Query Failed: URL: "+this.endpoint);
                     this.requestDataIfNeeded();
                 }
 
             })
             .catch(function (error) {
-                errorMessage("Element Query: "+error + ", URL: "+baseURL);
+                errorMessage("Structure Definition Query Failed: "+error + ", URL: "+this.endpoint);
       
             })
     }

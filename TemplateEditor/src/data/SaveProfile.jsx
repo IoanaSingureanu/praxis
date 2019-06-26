@@ -1,16 +1,12 @@
 import {baseURL} from './properties';
-import {infoMessage, errorMessage} from   '../actions/notifications';
+import {errorMessage} from   '../actions/notifications';
 
 export const updateProfile = (dataItem) => {
     const id = dataItem.resource.id;
     const endpoint = baseURL + id + "?_format=json";
     const jsonObj = JSON.stringify(dataItem.resource);
-
-    /*console.log("Profile UPDATE Request URL:   " + endpoint);
-    console.log("************ BEGIN JSON **********");
-    console.log(jsonObj);
-    console.log("********** END JSON ************");
-    */
+    
+    // showObject(endPoint, jsonObj);
    
     fetch(endpoint, {
         method: 'PUT',
@@ -26,8 +22,7 @@ export const updateProfile = (dataItem) => {
          console.log(JSON.parse(responseText));
     })
     .catch((error) => {
-         console.log("Update Error-------",error);
-         errorMessage("Element Update: "+error + ", URL: "+baseURL);
+        errorMessage("Failed to Update Profile: "+error + ", URL: "+endpoint);
     });
 }
 
@@ -36,11 +31,7 @@ export const insertProfile = (dataItem) => {
     const endpoint = baseURL+"?_format=json";
     const jsonObj = JSON.stringify(dataItem.resource);
     
-    console.log("Profile GENERATE Request URL:   " + endpoint);
-    console.log("************ BEGIN JSON **********");
-    console.log(jsonObj);
-    console.log("********** END JSON ************");
-
+   // showObject(endPoint, jsonObj);
     fetch(endpoint, {
         method: 'POST',
          headers: {
@@ -55,8 +46,15 @@ export const insertProfile = (dataItem) => {
          console.log(JSON.parse(responseText));
     })
     .catch((error) => {
-         console.log("Update Error-------",error);
-         errorMessage("Element Insert: "+error + ", URL: "+baseURL);
+         errorMessage("Failed to Generate Profile: "+error + ", URL: "+endpoint);
    
     });
+};
+
+const showObject = (endpoint, item) =>
+{
+    console.log("Profile Request URL:   " + endpoint);
+    console.log("************ BEGIN JSON **********");
+    console.log(item);
+    console.log("********** END JSON ************");
 };
