@@ -10,10 +10,6 @@ import { TableNameHeader, ColumnNameHeader, Renderers } from './renderers.jsx';
 import { updateProfile, insertProfile } from '../data/SaveProfile.jsx';
 
 
-function cloneProfile(profile) {
-    return Object.assign({}, profile);
-}
-
 export class FHIMProfileEditorForm extends React.Component {
 
     constructor(props) {
@@ -304,8 +300,6 @@ export class FHIMProfileEditorForm extends React.Component {
 
 }
 
-
-
 class TypeCell extends React.Component {
 
     handleChange = (e) => {
@@ -407,6 +401,11 @@ class UsageDownCell extends React.Component {
 
         );
     }
+}
+
+
+function cloneProfile(profile) {
+    return Object.assign({}, profile);
 }
 
 const mapStateToProps = (state, props) => ({
