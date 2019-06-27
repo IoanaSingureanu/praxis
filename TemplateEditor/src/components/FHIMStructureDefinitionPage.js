@@ -9,6 +9,8 @@ import { StructureDefinitionsLoader} from '../data/StructureDefinitionsLoader.js
 import { FHIMProfileEditorForm }      from './FHIMProfileEditorForm.jsx';
 import { ColumnNameHeader} from './renderers.jsx';
 
+
+
 export class FHIMStructureDefinitionPage extends React.Component {
 
     offset = { left: 500, top: 50 };
@@ -23,7 +25,10 @@ export class FHIMStructureDefinitionPage extends React.Component {
             profileInEdit: undefined,
             profiles: undefined,
             rowCount:0,
-            show: 1
+            show: 1,
+            infoMsg: 'INFO Message',
+            errorMsg: ''
+            
         };
     }
        
@@ -34,9 +39,9 @@ export class FHIMStructureDefinitionPage extends React.Component {
               <div align="right" className="k-form">
                  {this.searchInput()}
              </div>
-               {this.searchResults()}                    
+               {this.searchResults()}                          
             </div>
-
+            
         );
     }
 
@@ -101,15 +106,18 @@ export class FHIMStructureDefinitionPage extends React.Component {
                     <StructureDefinitionsLoader
                         dataState={this.state.dataState}
                         onDataRecieved={this.dataRecieved}
-                        searchBy={this.state.searchBy}/>) : (<p></p>)}
+                        searchBy={this.state.searchBy}/>) 
+                        : (<p></p>)}
                       
 
                 <br /><br />
+              
                  
                 {this.clearState()}
                 {this.state.profileInEdit &&
                     <FHIMProfileEditorForm dataItem={this.state.profileInEdit} save={this.save} cancel={this.cancel} />}
-           
+               
+              {}
         
         </div>
     );
@@ -159,6 +167,8 @@ export class FHIMStructureDefinitionPage extends React.Component {
     };
 
     onClick = (e) => {
+        e.preventDefault();
+        
         this.setState({ searchOn: true });
         this.setState({ structureDefinitions: { data: [], total: 0 } });
 
@@ -166,8 +176,17 @@ export class FHIMStructureDefinitionPage extends React.Component {
 
     clearState = () => {
 
+        if(this.state.searchOn === false)
+          return;
         this.state.searchOn = false;
     };
+
+    clearStatusMsg = () => {
+
+        this.state.infoMsg = '';
+        this.state.errorMsg = '';
+    };
+
 
     edit = (dataItem) => {
 
@@ -226,10 +245,13 @@ export class FHIMStructureDefinitionPage extends React.Component {
     save = () => {
 
         const profiles = this.state.structureDefinitions.data;
+
+      
         this.setState({
             profiles: profiles,
             dataItem: this.state.profileInEdit,
-            profileInEdit: undefined
+            profileInEdit: undefined,
+            dataFeatchError:false
         });
     }
 

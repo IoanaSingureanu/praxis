@@ -8,7 +8,7 @@ import { Input } from '@progress/kendo-react-inputs';
 
 import { TableNameHeader, ColumnNameHeader, Renderers } from './renderers.jsx';
 import { updateProfile, insertProfile } from '../data/SaveProfile.jsx';
-
+import {infoMessage, warnMessage, errorMessage} from   '../actions/notifications';
 
 export class FHIMProfileEditorForm extends React.Component {
 
@@ -44,6 +44,7 @@ export class FHIMProfileEditorForm extends React.Component {
 
         const profile = [this.state.profileInEdit];
         this.initWidget(profile);
+        {this.fromObjectToForm(profile[0])}
         const tableHeader = "Structure: " + profile[0].resource.name;
 
         return (
@@ -78,7 +79,8 @@ export class FHIMProfileEditorForm extends React.Component {
                         </Grid>
 
                         <div align="left" className="k-form">
-                            {this.genProfieInputs()}
+                            {this.genProfieInputs(profile[0])}
+                         
                         </div>
 
                         <div align="center" className="k-form">
@@ -91,10 +93,18 @@ export class FHIMProfileEditorForm extends React.Component {
     }
 
     initWidget = (profile) => {
-         this.state.data = profile[0].resource.snapshot.element;
+         if(profile[0] && profile[0].resource.snapshot && profile[0].resource.snapshot )
+         {
+            this.state.data = profile[0].resource.snapshot.element;
+         }
+         else{
+             warnMessage("Missing Data Elements From the Structure: "+profile );
+         }
+         
+       
     };
 
-    genProfieInputs = () => (
+    genProfieInputs = (profile) => (
 
         <table>
             <tr>
@@ -102,7 +112,7 @@ export class FHIMProfileEditorForm extends React.Component {
                     className="input-field"
                     label="Organization Name"
                     minLength={1}
-                    defaultValue=''
+                    defaultValue={profile.resource.publisher}
                     required={false}
                     name="organizationName"
                     onChange={this.onOrganizationNameChange}>
@@ -113,7 +123,7 @@ export class FHIMProfileEditorForm extends React.Component {
                     className="input-field"
                     label="Implementation Guide"
                     minLength={1}
-                    defaultValue=''
+                    defaultValue={profile.resource.implicitRules}
                     required={false}
                     name="implementationGuide"
                     onChange={this.onImplementationGuideChange}>
@@ -124,7 +134,7 @@ export class FHIMProfileEditorForm extends React.Component {
                     className="input-field"
                     label="Template Name"
                     minLength={1}
-                    defaultValue=''
+                    defaultValue={profile.resource.name}
                     required={false}
                     name="templateName"
                     onChange={this.onTemplateNameChange}>
@@ -135,7 +145,7 @@ export class FHIMProfileEditorForm extends React.Component {
                     className="input-field"
                     label="Template Version"
                     minLength={1}
-                    defaultValue=''
+                    defaultValue={profile.resource.version}
                     required={false}
                     name="templateVersion"
                     onChange={this.onTemplateVersionChange}>
@@ -151,12 +161,12 @@ export class FHIMProfileEditorForm extends React.Component {
                 <td>
                  <Button name="canceButton" onClick={this.props.cancel}>Cancel</Button>
                     &nbsp;&nbsp;
-                <Button name="updateProfieButton" onClick={this.updateProfile} primary={true}>Save</Button>
+                <Button name="updateProfieButton" onClick={this.updateProfile} className="k-button k-primary mt-1 mb-1">Save</Button>
                     &nbsp;&nbsp;
                 <Button name="genProfileButton"
                         disabled={!this.vaidateGenerateProfile()}
                         onClick={this.generateProfile}
-                        primary={true}>Generate FHIR Profile</Button>
+                        className="k-button k-primary mt-1 mb-1">Generate FHIR Profile</Button>
 
                 </td>
             </tr>
@@ -181,18 +191,51 @@ export class FHIMProfileEditorForm extends React.Component {
         const profile = this.state.profileInEdit;
         //const profile = [this.state.profileInEdit];
         updateProfile(profile);
-
+  
         this.props.save();
     };
 
-    updateTemplate = (profile) =>
+    fromFormToObject = (profile) =>
     {
         profile.resource.publisher = this.state.organizationName;
         profile.resource.implicitRules = this.state.implementationGuide;
         profile.resource.name = this.state.templateName;
-        profile.resource.meta.versionId = this.templateVersion;
-        console.log("Generating profile: "+profile.resource.name);
+        profile.resource.version = this.state.templateVersion;
+
+        console.log("From Form to Object: Publisher: "+
+        profile.resource.publisher + " Rule: "+ 
+        profile.resource.implicitRules + " Name: "
+        +profile.resource.name + " Version: " + profile.resource.version );
     }
+
+    fromObjectToForm = (profile) =>
+    {
+        if(this.vaidateGenerateProfile())
+             return;
+       
+        if(!profile.resource)
+        {
+            console.log("Profile Resource Missing");
+            return;
+        }
+        
+        if(profile.resource.publisher && this.state.organizationName  === '')
+            this.state.organizationName = profile.resource.publisher;
+        if(profile.resource.publisher && this.state.implementationGuide === '')
+             this.state.implementationGuide =  profile.resource.implicitRules;
+        if(profile.resource.name &&   profile.resource.name === '')
+          this.state.templateName = profile.resource.name;
+        if(profile.resource.version && this.state.templateVersion === '')
+            this.state.templateVersion =  profile.resource.version;
+    
+            console.log("From Object to Form:: Publisher: "+
+            profile.resource.publisher + " Rule: "+ 
+            profile.resource.implicitRules + " Name: "
+            +profile.resource.name + " Version: " + profile.resource.version );
+            
+       
+    }
+
 
     generateProfile = (e) => {
 
@@ -206,7 +249,7 @@ export class FHIMProfileEditorForm extends React.Component {
             return;
         }
         let profile =  cloneProfile(this.state.profileInEdit);
-        this.updateTemplate(profile);
+        this.fromFormToObject(profile);
         this.setState({
             searchOn: true
         });

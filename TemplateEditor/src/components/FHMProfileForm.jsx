@@ -176,7 +176,7 @@ export default class FHIMProfileEditorForm extends React.Component {
                             <GridToolbar>
                                 <button
                                     title="Add new"
-                                    className="k-button k-primary"
+                                    className="k-button k-primary mt-1 mb-1"
                                     onClick={this.enterInsert}
                                 >Add new
                         </button>

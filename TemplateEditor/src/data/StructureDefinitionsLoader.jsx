@@ -5,6 +5,7 @@ import { toODataString } from '@progress/kendo-data-query';
 
 import {baseURL} from './properties';
 import {errorMessage} from   '../actions/notifications';
+import { infoNotification, warnNotification, errorNotification} from '../actions/notifications';
 
 export class StructureDefinitionsLoader extends React.Component {
     endpoint = baseURL+'?name:contains=';
@@ -53,6 +54,7 @@ export class StructureDefinitionsLoader extends React.Component {
                 errorMessage("Structure Definition Query Failed: "+error + ", URL: "+this.endpoint);
       
             })
+         
     }
 
     render() {
@@ -65,10 +67,9 @@ export class StructureDefinitionsLoader extends React.Component {
 
 class LoadingPanel extends React.Component {
     render() {
-       
         const loadingPanel = (
-            <div >
-                <span>Loading</span>
+            <div class="k-loading-mask">
+                <span class="k-loading-text">Loading</span>
                 <div></div>
                 <div></div>
             </div>
@@ -78,4 +79,3 @@ class LoadingPanel extends React.Component {
         return gridContent ? ReactDOM.createPortal(loadingPanel, gridContent) : loadingPanel;
     }
 }
-

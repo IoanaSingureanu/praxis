@@ -1,5 +1,8 @@
 import React from 'react';
+
 import { Notification, NotificationGroup } from '@progress/kendo-react-notification';
+import { Fade, Slide } from '@progress/kendo-react-animation';
+
 
 const position = {
   topLeft: { top: 70, left: 0, alignItems: 'flex-start' },
@@ -10,35 +13,63 @@ const position = {
   bottomRight: { bottom: 0, right: 0, alignItems: 'flex-end' }
 };
 
-export const infoMessage = (msg) => {
-  
-  alert(''+ msg);
 
+
+export const infoMessage = (msg) => {
+  alert('' + msg);
 };
 
 export const warnMessage = (msg) => {
-  alert(''+ msg);
+  alert('' + msg);
 };
 
 export const errorMessage = (msg) => {
-  alert(''+ msg);
+  alert('' + msg);
 };
 
-export const _infoMessage = (msg) => (
-  <NotificationGroup style={position.topCenter}>
-     <Notification key="info" type={{ style: 'info' }}>{msg}</Notification>
-  </NotificationGroup>
+export const infoNotification = (msg) => (
+
+  <div>
+
+  
+  <Slide direction={'down'}>
+
+    <Notification
+      type={{ style: 'info', icon: true }}
+      closable={true}
+      style={{ overflow: 'visible' }}
+      onClose={() => ({})}
+    >
+      <span>{msg}</span>
+    </Notification>
+  </Slide>
+  </div>
 );
 
 
-export const _warnMessage = (msg) => (
-  <NotificationGroup style={position.topCenter}>
-  <Notification key="warning" type={{ style: 'warning' }}>{msg}</Notification>
-</NotificationGroup>
+export const warnNotification = (msg) => (
+  <Fade enter={true} exit={true}>
+    <NotificationGroup style={position.bottomCenter}>
+      <Notification
+        type={{ style: 'warning', icon: true }}
+        closable={true}
+
+      >
+        <span>{msg}</span>
+      </Notification>
+    </NotificationGroup>
+  </Fade>
 );
 
-export const _errorMessage = (msg) => (
-  <NotificationGroup style={position.topCenter}>
-  <Notification key="error" type={{ style: 'error' }}>{msg}</Notification>
-</NotificationGroup>
+export const errorNotification = (msg) => (
+  <Fade enter={true} exit={true}>
+    <NotificationGroup style={position.bottomCenter}>
+      <Notification
+        type={{ style: 'error', icon: true }}
+        closable={true}>
+
+        <span>{msg}</span>
+      </Notification>
+    </NotificationGroup>
+  </Fade>
 );
