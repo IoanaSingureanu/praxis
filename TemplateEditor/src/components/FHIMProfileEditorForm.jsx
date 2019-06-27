@@ -228,7 +228,7 @@ export class FHIMProfileEditorForm extends React.Component {
         if(profile.resource.version && this.state.templateVersion === '')
             this.state.templateVersion =  profile.resource.version;
     
-            console.log("From Object to Form:: Publisher: "+
+            console.log("From Object to Form: Publisher: "+
             profile.resource.publisher + " Rule: "+ 
             profile.resource.implicitRules + " Name: "
             +profile.resource.name + " Version: " + profile.resource.version );
