@@ -1,14 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { DropDownList } from '@progress/kendo-react-dropdowns';
-import { GridColumn as Column, Grid} from '@progress/kendo-react-grid';
+import { GridColumn as Column, Grid } from '@progress/kendo-react-grid';
 import { Button } from '@progress/kendo-react-buttons';
 import { Popup } from '@progress/kendo-react-popup';
 import { Input } from '@progress/kendo-react-inputs';
 
 import { TableNameHeader, ColumnNameHeader, Renderers } from './renderers.jsx';
 import { updateProfile, insertProfile } from '../data/SaveProfile.jsx';
-import {infoMessage, warnMessage, errorMessage} from   '../actions/notifications';
+import { infoMessage, warnMessage, errorMessage } from '../actions/notifications';
 
 export class FHIMProfileEditorForm extends React.Component {
 
@@ -44,8 +44,9 @@ export class FHIMProfileEditorForm extends React.Component {
 
         const profile = [this.state.profileInEdit];
         this.initWidget(profile);
-        {this.fromObjectToForm(profile[0])}
-        const tableHeader = "Structure: " + profile[0].resource.name;
+      
+        let structureName = (this.isObjectTemplateType(this.state.profileInEdit)? "Template":"Class");
+        const tableHeader = structureName+": " + profile[0].resource.name;
 
         return (
             <div className="content-container">
@@ -56,7 +57,7 @@ export class FHIMProfileEditorForm extends React.Component {
                     position="top center"
                     align={{
                         horizontal: "center",
-                        vertical:   "center"
+                        vertical: "center"
                     }}
                     popupClass={'popup-content'} >
 
@@ -80,7 +81,7 @@ export class FHIMProfileEditorForm extends React.Component {
 
                         <div align="left" className="k-form">
                             {this.genProfieInputs(profile[0])}
-                         
+
                         </div>
 
                         <div align="center" className="k-form">
@@ -93,15 +94,14 @@ export class FHIMProfileEditorForm extends React.Component {
     }
 
     initWidget = (profile) => {
-         if(profile[0] && profile[0].resource.snapshot && profile[0].resource.snapshot )
-         {
+        if (profile[0] && profile[0].resource.snapshot && profile[0].resource.snapshot) {
             this.state.data = profile[0].resource.snapshot.element;
-         }
-         else{
-             warnMessage("Missing Data Elements From the Structure: "+profile );
-         }
-         
-       
+        }
+        else {
+            warnMessage("Missing Data Elements From the Structure: " + profile);
+        }
+
+
     };
 
     genProfieInputs = (profile) => (
@@ -159,12 +159,12 @@ export class FHIMProfileEditorForm extends React.Component {
         <table>
             <tr>
                 <td>
-                 <Button name="canceButton" onClick={this.props.cancel}>Cancel</Button>
+                    <Button name="canceButton" onClick={this.props.cancel}>Cancel</Button>
                     &nbsp;&nbsp;
                 <Button name="updateProfieButton" onClick={this.updateProfile} className="k-button k-primary mt-1 mb-1">Save</Button>
                     &nbsp;&nbsp;
                 <Button name="genProfileButton"
-                        disabled={!this.vaidateGenerateProfile()}
+                        disabled={!this.validateGenerateProfile()}
                         onClick={this.generateProfile}
                         className="k-button k-primary mt-1 mb-1">Generate FHIR Profile</Button>
 
@@ -174,90 +174,100 @@ export class FHIMProfileEditorForm extends React.Component {
 
     );
 
+    generateProfile = (e) => {
+        console.log("Generate profile not implemented");
+        //get profile from the server
+        //save profile to disk
+    }
 
-    vaidateGenerateProfile = () => {
+    isObjectTemplateType = (profile) => {
+        // resource type
+        let resourceType = profile.resource.type;
+        if (!resourceType) {
+            console.log("Warning, Resource Name is not defined");
+            return false;
+        }
+        if (resourceType.endsWith('template')) {
+            console.log("Resource Type: " + " IT IS A TEMPLATE");
+            return true;
+        }
+        console.log("Resource Type: " + resourceType);
+        return false;
+    }
 
-        if (this.state.organizationName === '' || this.state.implementationGuide === '' ||
-            this.state.templateName === '' || this.state.templateVersion === '') {
+    validateGenerateProfile = () => {
+        // Disable if it's a class
+        if (this.isObjectTemplateType(this.state.profileInEdit))
+            return true;
+        return false;
+    }
+
+    validateSaveProfile = (profile) => {
+
+        if (profile.resource.publisher === '' ||
+            profile.resource.implicitRules === '' ||
+            profile.resource.name === '' ||
+            profile.resource.version === '') {
+                /*
+            console.log("Resurce fields are not defined: "+
+            profile.resource.publisher + " "+profile.resource.implicitRules +
+            profile.resource.name + " "+ profile.resource.versio);
+            */
             return false;
         }
         return true;
+
     };
 
 
     updateProfile = (e) => {
-        e.preventDefault();
 
-        const profile = this.state.profileInEdit;
-        //const profile = [this.state.profileInEdit];
+        e.preventDefault();
+        const errorMessage =
+            "A new template requires an implementation guide,  a responsible organization, a template name, and a template version.";
+        let profile = this.state.profileInEdit;
+        if (!this.validateSaveProfile(profile)) {
+            alert(errorMessage);
+
+            return;
+        }
+
+        if (!this.isObjectTemplateType(profile)) {
+            // create tempate first
+            profile = this.createTemplate(profile);
+        }
+
+
         updateProfile(profile);
-  
+
         this.props.save();
     };
 
-    fromFormToObject = (profile) =>
-    {
-        profile.resource.publisher = this.state.organizationName;
-        profile.resource.implicitRules = this.state.implementationGuide;
-        profile.resource.name = this.state.templateName;
-        profile.resource.version = this.state.templateVersion;
 
-        console.log("From Form to Object: Publisher: "+
-        profile.resource.publisher + " Rule: "+ 
-        profile.resource.implicitRules + " Name: "
-        +profile.resource.name + " Version: " + profile.resource.version );
-    }
+    createTemplate = (profile) => {
 
-    fromObjectToForm = (profile) =>
-    {
-        if(this.vaidateGenerateProfile())
-             return;
-       
-        if(!profile.resource)
-        {
-            console.log("Profile Resource Missing");
-            return;
-        }
-        
-        if(profile.resource.publisher && this.state.organizationName  === '')
-            this.state.organizationName = profile.resource.publisher;
-        if(profile.resource.publisher && this.state.implementationGuide === '')
-             this.state.implementationGuide =  profile.resource.implicitRules;
-        if(profile.resource.name &&   profile.resource.name === '')
-          this.state.templateName = profile.resource.name;
-        if(profile.resource.version && this.state.templateVersion === '')
-            this.state.templateVersion =  profile.resource.version;
-    
-            console.log("From Object to Form: Publisher: "+
-            profile.resource.publisher + " Rule: "+ 
-            profile.resource.implicitRules + " Name: "
-            +profile.resource.name + " Version: " + profile.resource.version );
-            
-       
-    }
+        console.log("Before: " + profile.resource.type);
+        let clone = cloneProfile(profile);
+        let res = clone.resource;
+        clone.resource.type = clone.resource.type.replace('class', 'template');
 
+        console.log("After: " + clone.resource.type);
+        const newName = "ClassName." + res.publisher + "." + res.implicitRules + "." + res.name +
+            "." + res.version;
+        clone.resource.name = newName;
 
-    generateProfile = (e) => {
-
-        e.preventDefault();
-        const errorMessage = 
-        "A new template requires an implementation guide,  a responsible organization, a template name, and a template version.";
-
-        if(!this.vaidateGenerateProfile())
-        {   
-            alert(errorMessage);
-            return;
-        }
-        let profile =  cloneProfile(this.state.profileInEdit);
-        this.fromFormToObject(profile);
         this.setState({
             searchOn: true
         });
-        
-        insertProfile(profile);
-        this.props.save();
+
+        console.log("New Name: " + clone.resource.name);
+
+        profile = insertProfile(clone);
+        return clone;
+
     };
 
+   
     onChange(e) {
         this.setState({ value: e.target.value });
     }
@@ -267,24 +277,36 @@ export class FHIMProfileEditorForm extends React.Component {
         const organizationName = e.target.value;
         this.setState({ organizationName: organizationName });
 
+        let profile = this.state.profileInEdit;
+         profile.resource.publisher = this.state.organizationName;
+       
     };
 
 
+    
     onImplementationGuideChange = (e) => {
 
         const implementationGuide = e.target.value;
         this.setState({ implementationGuide: implementationGuide });
+        let profile = this.state.profileInEdit;
+        profile.resource.implicitRules = this.state.implementationGuide;
+        
     };
 
     onTemplateNameChange = (e) => {
 
         const templateName = e.target.value;
         this.setState({ templateName: templateName });
+        let profile = this.state.profileInEdit;
+        profile.resource.name = this.state.templateName;
+       
     };
 
     onTemplateVersionChange = (e) => {
         const templateVersion = e.target.value;
         this.setState({ templateVersion: templateVersion });
+        let profile = this.state.profileInEdit;
+        profile.resource.version = this.state.templateVersion;
     };
 
 
@@ -320,6 +342,7 @@ export class FHIMProfileEditorForm extends React.Component {
     }
 
     saveChanges(e) {
+
         e.preventDefault();
         this.setState({
             editField: undefined,

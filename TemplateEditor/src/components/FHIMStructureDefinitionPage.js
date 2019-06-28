@@ -78,7 +78,7 @@ export class FHIMStructureDefinitionPage extends React.Component {
                
         <Grid       
                     filterable={false}
-                    sortable={true}
+                    sortable={false}
                     pageable={true}
                     resizable={true}
                     {...this.state.dataState}
@@ -136,6 +136,7 @@ export class FHIMStructureDefinitionPage extends React.Component {
             ...this.state,
             structureDefinitions: structureDefinitions
         });
+        console.log("Data Count: "+structureDefinitions.total);
     }
 
     pageChange(event) {

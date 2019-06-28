@@ -18,7 +18,7 @@ export const updateProfile = (dataItem) => {
         body: jsonObj
     })  
     .then((response) => {
-       console.log("Operation Successed.");
+       console.log("Update Operation Successed.");
     })
     .catch((error) => {
         errorMessage("Failed to Update Profile: "+error + ", URL: "+endpoint);
@@ -41,7 +41,7 @@ export const insertProfile = (dataItem) => {
         body: jsonObj
     })  
     .then((response) => {
-        console.log("Operation Successed.");
+        console.log("Create Operation Successed.");
     })
     .catch((error) => {
          errorMessage("Failed to Generate Profile: "+error + ", URL: "+endpoint);
