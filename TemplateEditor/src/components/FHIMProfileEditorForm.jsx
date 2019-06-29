@@ -44,12 +44,10 @@ export class FHIMProfileEditorForm extends React.Component {
 
         const profile = [this.state.profileInEdit];
         let structureName = "Structure";
-        if(this.isObjectClassType(profile[0]))
-        {
+        if (this.isObjectClassType(profile[0])) {
             structureName = "Class";
         }
-        else if(this.isObjectTemplateType(profile[0]))
-        {
+        else if (this.isObjectTemplateType(profile[0])) {
             structureName = "Template";
         }
         const tableHeader = structureName + ": " + profile[0].resource.name;
@@ -84,14 +82,17 @@ export class FHIMProfileEditorForm extends React.Component {
                                 <Column headerCell={ColumnNameHeader} title="Type" field="type" editable={true} cell={TypeCell} />
                                 <Column headerCell={ColumnNameHeader} title="Usage" field="extensions" editable={true} cell={UsageDownCell} />
                             </Column>
+                            <GridToolbar>
+
+                            </GridToolbar>
                         </Grid>
 
-                        <GridToolbar>
+                        <div align="left">
                             {this.genProfieInputs(profile[0])}
-                            <div align="center">
-                                {this.listButtons()}
-                            </div>
-                        </GridToolbar>
+                        </div>
+                        <div align="right">
+                            {this.listButtons()}
+                        </div>
                     </form>
                 </Popup>
             </div>
@@ -135,6 +136,7 @@ export class FHIMProfileEditorForm extends React.Component {
             <br /><br />
             <Input
                 className="input-field"
+                style={{ width: "55%" }}
                 label="Template Name"
                 minLength={1}
                 defaultValue={profile.resource.name}
@@ -160,16 +162,16 @@ export class FHIMProfileEditorForm extends React.Component {
 
     listButtons = () => (
         <div>
-            <Button name="canceButton" onClick={this.props.cancel}>Cancel</Button>
-            &nbsp;&nbsp;
-                <Button name="updateProfieButton"
+            <Button name="updateProfieButton"
                 disabled={!this.enableSaveProfile()}
                 onClick={this.updateProfile} className="k-button k-primary mt-1 mb-1">Save</Button>
             &nbsp;&nbsp;
-                <Button name="genProfileButton"
+        <Button name="genProfileButton"
                 disabled={!this.enableGenerateProfile()}
                 onClick={this.generateProfile}
                 className="k-button k-primary mt-1 mb-1">Generate FHIR Profile</Button>
+            &nbsp;&nbsp;
+            <Button name="canceButton" onClick={this.props.cancel}>Cancel</Button>
 
         </div>
 
@@ -208,25 +210,23 @@ export class FHIMProfileEditorForm extends React.Component {
     }
 
     enableGenerateProfile = () => {
-      
-        if (this.enableInputFields())
-        {
-            if(this.isObjectTemplateType(this.state.profileInEdit))
-                 return true;
+
+        if (this.enableInputFields()) {
+            if (this.isObjectTemplateType(this.state.profileInEdit))
+                return true;
         }
         return false;
     }
 
     enableSaveProfile = () => {
-     
-        if (this.enableInputFields())
-        {
+
+        if (this.enableInputFields()) {
             return this.validateSaveProfile(false);
         }
         return false;
     }
 
-    
+
     enableInputFields = () => {
 
         if (this.isObjectTemplateType(this.state.profileInEdit) ||
@@ -237,41 +237,39 @@ export class FHIMProfileEditorForm extends React.Component {
     }
     enableInputRestrictFields = () => {
 
-       return this.enableInputFields ();
+        return this.enableInputFields();
     }
 
     getVersion = (name) => {
         const res = name.split('.');
-     
-        if(res.length > 2)
-        {
-            return  res[res.length-1];
+
+        if (res.length > 2) {
+            return res[res.length - 1];
         }
-     
+
         return '0';
     }
-   
+
     getTemplateName = (name) => {
 
         const res = name.split('.');
         let newName = 'ClassName';
-     
-        if(res.length > 0)
-        {
-            newName =  res[0];
+
+        if (res.length > 0) {
+            newName = res[0];
         }
-        console.log("Get Template: Name: Old Name: "+ name + " New Name: "+newName);
+        console.log("Get Template: Name: Old Name: " + name + " New Name: " + newName);
         return newName;
     }
 
     validateSaveProfile = (showError) => {
 
         const profile = this.state.profileInEdit;
-      
+
         let errList = '';
         let beginMessage = "Filed: "
         let endMessage = " is required. "
-       
+
 
         if (profile.resource.publisher.trim() === '') {
             errList += "'Organization Name'";
@@ -292,7 +290,7 @@ export class FHIMProfileEditorForm extends React.Component {
             }
             errList += "'Template Name'";
         }
-        if (this.state.templateVersion === '' && 
+        if (this.state.templateVersion === '' &&
             this.getVersion(profile.resource.name) === '') {
             if (errList != '') {
                 beginMessage = "Fileds: "
@@ -305,31 +303,30 @@ export class FHIMProfileEditorForm extends React.Component {
         if (errList != '') {
             const err = beginMessage + errList + endMessage;
             if (showError) {
-                
+
                 alert(err);
             }
-            else{
+            else {
                 console.log(err);
             }
 
             return false;
         }
-       
+
         return true;
 
     };
 
-    buildTemplateName = (res, name, version) =>
-    {
-        const newName = res.publisher + 
+    buildTemplateName = (res, name, version) => {
+        const newName = res.publisher +
             "." + res.implicitRules +
             "." + name +
             "." + version;
-    
-            console.log("PROFILE NAME: "+newName);
-            return newName;
 
-           
+        console.log("PROFILE NAME: " + newName);
+        return newName;
+
+
     }
     updateProfile = (e) => {
 
@@ -340,21 +337,19 @@ export class FHIMProfileEditorForm extends React.Component {
         let res = profile.resource;
 
         if (!this.validateSaveProfile(true)) {
-              return;
+            return;
         }
 
-        profile.resource.name = 
-                 this.buildTemplateName(res, 
-                 this.getTemplateName(res.name),
-                 this.state.templateVersion);
+        profile.resource.name =
+            this.buildTemplateName(res,
+                this.getTemplateName(res.name),
+                this.state.templateVersion);
 
-        if (this.isObjectClassType(profile)) 
-        {
+        if (this.isObjectClassType(profile)) {
             // create tempate first          
             profile = this.createTemplate(profile);
         }
-        else if (this.isObjectTemplateType(profile)) 
-        {
+        else if (this.isObjectTemplateType(profile)) {
             // Update
             console.log("Update Tempate  Name: " + profile.resource.name);
             updateProfile(profile);
@@ -370,16 +365,16 @@ export class FHIMProfileEditorForm extends React.Component {
         let clone = cloneProfile(profile);
         let res = clone.resource;
         clone.resource.type = clone.resource.type.replace('class', 'template');
-        clone.resource.version = this.state.templateVersion; 
-        clone.resource.name = 
-            this.buildTemplateName(res, 
+        clone.resource.version = this.state.templateVersion;
+        clone.resource.name =
+            this.buildTemplateName(res,
                 this.state.templateName,
-                 this.state.templateVersion);
+                this.state.templateVersion);
         console.log("New Tempate  Name: " + clone.resource.name);
 
         profile = insertProfile(clone);
 
-        
+
         this.setState({
             searchOn: true
         });
