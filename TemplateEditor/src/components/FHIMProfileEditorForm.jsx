@@ -109,7 +109,7 @@ export class FHIMProfileEditorForm extends React.Component {
                 label="Organization Name"
                 minLength={1}
                 defaultValue={profile.resource.publisher}
-                required={false}
+                required={true}
                 name="organizationName"
                 disabled={!this.enableInputFields()}
                 onChange={this.onOrganizationNameChange}>
@@ -120,7 +120,7 @@ export class FHIMProfileEditorForm extends React.Component {
                 label="Implementation Guide"
                 minLength={1}
                 defaultValue={profile.resource.implicitRules}
-                required={false}
+                required={true}
                 name="implementationGuide"
                 disabled={!this.enableInputFields()}
                 onChange={this.onImplementationGuideChange}>
@@ -131,7 +131,7 @@ export class FHIMProfileEditorForm extends React.Component {
                 label="Template Name"
                 minLength={1}
                 defaultValue={profile.resource.name}
-                required={false}
+                required={true}
                 name="templateName"
                 disabled={!this.enableInputFields()}
                 onChange={this.onTemplateNameChange}>
@@ -142,7 +142,7 @@ export class FHIMProfileEditorForm extends React.Component {
                 label="Template Version"
                 minLength={1}
                 defaultValue={profile.resource.version}
-                required={false}
+                required={true}
                 name="templateVersion"
                 disabled={!this.enableInputFields()}
                 onChange={this.onTemplateVersionChange}>
@@ -248,7 +248,7 @@ export class FHIMProfileEditorForm extends React.Component {
         
         if(errList != '')
         {
-            alert(errList);
+            alert("Fileds: "+errList+" required.");
             return false;
         }
         return true;

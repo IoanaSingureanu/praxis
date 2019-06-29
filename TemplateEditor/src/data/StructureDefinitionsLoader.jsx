@@ -59,8 +59,8 @@ export class StructureDefinitionsLoader extends React.Component {
         let searchBy = this.props.queryDefinition.searchBy;
         let transactionId = this.props.queryDefinition.transactionId;
       
-        console.log("Data Request If Needed, Data State: "+toODataString(this.props.dataState) );
-        console.log("Data Request If Needed, Query Definition: "+toODataString(this.props.queryDefinition));
+      //  console.log("Data Request If Needed, Data State: "+toODataString(this.props.dataState) );
+      //  console.log("Data Request If Needed, Query Definition: "+toODataString(this.props.queryDefinition));
 
 
         if(!searchBy)
@@ -79,9 +79,10 @@ export class StructureDefinitionsLoader extends React.Component {
         }
         else if (this.pending || toODataString(this.props.dataState) === this.lastSuccess) {
             
-                 console.log("No Query: " +
+              /*   console.log("No Query: " +
                   this.pending + " Last Success: "+this.lastSuccess + " TransactionId: "
                  + transactionId + " Serach By: "+searchBy);
+              */
                  return;
         }
         else {
@@ -134,8 +135,8 @@ class LoadingPanel extends React.Component {
         const loadingPanel = (
             <div class="k-loading-mask">
                 <span class="k-loading-text">Loading</span>
-                <div></div>
-                <div></div>
+                <div class="k-loading-image"></div>
+                <div class="k-loading-color"></div>
             </div>
         );
 
@@ -143,6 +144,7 @@ class LoadingPanel extends React.Component {
         return gridContent ? ReactDOM.createPortal(loadingPanel, gridContent) : loadingPanel;
     }
 }
+
 
 const mapStateToProps = (state, props) => ({
    
