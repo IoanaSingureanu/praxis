@@ -6,10 +6,9 @@ import { Button } from '@progress/kendo-react-buttons';
 import { Popup } from '@progress/kendo-react-popup';
 import { Input } from '@progress/kendo-react-inputs';
 
-
 import { TableNameHeader, ColumnNameHeader, Renderers } from './renderers.jsx';
 import { updateProfile, insertProfile } from '../data/SaveProfile.jsx';
-import { infoMessage, warnMessage, errorMessage,warnNotification } from '../actions/notifications';
+import { infoMessage, warnMessage, errorMessage, warnNotification } from '../actions/notifications';
 
 export class FHIMProfileEditorForm extends React.Component {
 
@@ -45,12 +44,20 @@ export class FHIMProfileEditorForm extends React.Component {
 
         const profile = [this.state.profileInEdit];
         let structureName = "Structure";
+        if(this.isObjectClassType(profile[0]))
+        {
+            structureName = "Class";
+        }
+        else if(this.isObjectTemplateType(profile[0]))
+        {
+            structureName = "Template";
+        }
         const tableHeader = structureName + ": " + profile[0].resource.name;
 
         return (
-            
+
             <div className="content-container">
-                
+
                 <Popup className="popup-content" anchor={this.anchor}
                     show={this.state.show}
                     onClose={this.props.cancel}
@@ -62,7 +69,7 @@ export class FHIMProfileEditorForm extends React.Component {
                     popupClass={'popup-content'} >
                     {this.initWidget(profile)}
                     <form onSubmit={this.handleSubmit} className="k-form">
-                      
+
                         <Grid
                             style={{ backgroundColor: "rgb(227, 231, 237)" }}
                             data={this.state.data}
@@ -111,7 +118,7 @@ export class FHIMProfileEditorForm extends React.Component {
                 defaultValue={profile.resource.publisher}
                 required={true}
                 name="organizationName"
-                disabled={!this.enableInputFields()}
+                disabled={!this.enableInputRestrictFields()}
                 onChange={this.onOrganizationNameChange}>
             </Input>
             <br /><br />
@@ -122,7 +129,7 @@ export class FHIMProfileEditorForm extends React.Component {
                 defaultValue={profile.resource.implicitRules}
                 required={true}
                 name="implementationGuide"
-                disabled={!this.enableInputFields()}
+                disabled={!this.enableInputRestrictFields()}
                 onChange={this.onImplementationGuideChange}>
             </Input>
             <br /><br />
@@ -133,7 +140,7 @@ export class FHIMProfileEditorForm extends React.Component {
                 defaultValue={profile.resource.name}
                 required={true}
                 name="templateName"
-                disabled={!this.enableInputFields()}
+                disabled={!this.enableInputRestrictFields()}
                 onChange={this.onTemplateNameChange}>
             </Input>
             <br /><br />
@@ -141,7 +148,7 @@ export class FHIMProfileEditorForm extends React.Component {
                 className="input-field"
                 label="Template Version"
                 minLength={1}
-                defaultValue={profile.resource.version}
+                defaultValue={this.getVersion(profile.resource.name)}
                 required={true}
                 name="templateVersion"
                 disabled={!this.enableInputFields()}
@@ -155,8 +162,8 @@ export class FHIMProfileEditorForm extends React.Component {
         <div>
             <Button name="canceButton" onClick={this.props.cancel}>Cancel</Button>
             &nbsp;&nbsp;
-                <Button name="updateProfieButton" 
-                 disabled={!this.enableSaveProfile()}
+                <Button name="updateProfieButton"
+                disabled={!this.enableSaveProfile()}
                 onClick={this.updateProfile} className="k-button k-primary mt-1 mb-1">Save</Button>
             &nbsp;&nbsp;
                 <Button name="genProfileButton"
@@ -201,70 +208,102 @@ export class FHIMProfileEditorForm extends React.Component {
     }
 
     enableGenerateProfile = () => {
-        // Disable if it's a class
-        if (this.isObjectTemplateType(this.state.profileInEdit))
-            return true;
+      
+        if (this.enableInputFields())
+        {
+            if(this.isObjectTemplateType(this.state.profileInEdit))
+                 return true;
+        }
         return false;
     }
 
-    enableSaveProfile = () => { 
-        // Disable if it's a class
-        if (this.isObjectTemplateType(this.state.profileInEdit) ||
-            this.isObjectClassType(this.state.profileInEdit))
+    enableSaveProfile = () => {
+     
+        if (this.enableInputFields())
         {
+            return this.validateSaveProfile(false);
+        }
+        return false;
+    }
+
+    
+    enableInputFields = () => {
+
+        if (this.isObjectTemplateType(this.state.profileInEdit) ||
+            this.isObjectClassType(this.state.profileInEdit)) {
+            return true;
+        }
+        return false;
+    }
+    enableInputRestrictFields = () => {
+
+        if (this.isObjectClassType(this.state.profileInEdit)) {
             return true;
         }
         return false;
     }
 
-    enableInputFields = () => { 
-       
-        return this.enableSaveProfile();
+    getVersion = (name) => {
+        const res = name.split('.');
+     
+        if(res.length > 4)
+        {
+            return  res[res.length-1];
+        }
+    //    console.log("Get Version: Name: "+name+ " version: "+version);
+        return '0';
     }
+   
+    validateSaveProfile = (showError) => {
 
-    validateSaveProfile = (profile) => {
+        const profile = this.state.profileInEdit;
+      
 
         let errList = '';
         let beginMessage = "Filed: "
         let endMessage = " is required. "
 
-        if (profile.resource.publisher === '')
-        {
+        if (profile.resource.publisher.trim() === '') {
             errList += "'Organization Name'";
         }
-        if (profile.resource.implicitRules === '')
-        {
-          if(errList !='') {
-              beginMessage = "Fileds: "
-              endMessage = " are required."
-              errList += ", ";
-          }
-          errList += "'Implementation Guide'";
+        if (profile.resource.implicitRules.trim() === '') {
+            if (errList != '') {
+                beginMessage = "Fileds: "
+                endMessage = " are required."
+                errList += ", ";
+            }
+            errList += "'Implementation Guide'";
         }
-        if (profile.resource.name === '')
-        {
-            if(errList !='') {
+        if (profile.resource.name.trim() === '') {
+            if (errList != '') {
                 beginMessage = "Fileds: "
                 endMessage = " are required."
                 errList += ", ";
             }
             errList += "'Template Name'";
         }
-        if (profile.resource.version === '')
-        {
-            if(errList !='') {
+        if (this.getVersion(profile.resource.name) === '') {
+            if (errList != '') {
                 beginMessage = "Fileds: "
                 endMessage = " are required."
                 errList += ", ";
             }
             errList += "'Template Version'";
         }
-        
-        if(errList != '')
-        {
-            alert(beginMessage + errList + endMessage);
+
+        if (errList != '') {
+            const err = beginMessage + errList + endMessage;
+            if (showError) {
+                
+                alert(err);
+            }
+            else{
+                console.log(err);
+            }
+
             return false;
         }
+       
         return true;
 
     };
@@ -276,19 +315,24 @@ export class FHIMProfileEditorForm extends React.Component {
         const errorMessage =
             "A new template requires an implementation guide,  a responsible organization, a template name, and a template version.";
         let profile = this.state.profileInEdit;
-        if (!this.validateSaveProfile(profile)) {
-           
 
-            return;
+        if (!this.validateSaveProfile(true)) {
+              return;
         }
 
-        if (!this.isObjectTemplateType(profile)) {
+        const newName = "ClassName." + profile.publisher + "." + profile.implicitRules + "." + profile.name +
+            "." + this.state.templateVersion;
+
+        profile.resource.name = newName;
+
+        if (this.isObjectClassType(profile)) {
             // create tempate first
             profile = this.createTemplate(profile);
         }
-
-
-        updateProfile(profile);
+        else
+        {
+            updateProfile(profile);
+        }
 
         this.props.save();
     };
@@ -301,10 +345,12 @@ export class FHIMProfileEditorForm extends React.Component {
         let res = clone.resource;
         clone.resource.type = clone.resource.type.replace('class', 'template');
 
-        console.log("After: " + clone.resource.type);
+        
         const newName = "ClassName." + res.publisher + "." + res.implicitRules + "." + res.name +
-            "." + res.version;
+            "." + this.state.templateVersion;
+
         clone.resource.name = newName;
+        console.log("Ne Temp : " + newName);
 
         this.setState({
             searchOn: true
@@ -355,9 +401,6 @@ export class FHIMProfileEditorForm extends React.Component {
     onTemplateVersionChange = (e) => {
         const templateVersion = e.target.value;
         this.setState({ templateVersion: templateVersion });
-        let profile = this.state.profileInEdit;
-        profile.resource.version = templateVersion;
-              
     };
 
 

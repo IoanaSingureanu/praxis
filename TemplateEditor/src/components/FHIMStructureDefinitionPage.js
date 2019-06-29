@@ -76,7 +76,7 @@ export class FHIMStructureDefinitionPage extends React.Component {
                
         <Grid       
                     filterable={false}
-                    sortable={true}
+                    sortable={false}
                     pageable={true}
                     resizable={true}
                     {...this.state.dataState}
