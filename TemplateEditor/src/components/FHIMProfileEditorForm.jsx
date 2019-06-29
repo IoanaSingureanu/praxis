@@ -44,9 +44,9 @@ export class FHIMProfileEditorForm extends React.Component {
 
         const profile = [this.state.profileInEdit];
         this.initWidget(profile);
-      
-        let structureName = (this.isObjectTemplateType(this.state.profileInEdit)? "Template":"Class");
-        const tableHeader = structureName+": " + profile[0].resource.name;
+
+        let structureName = (this.isObjectTemplateType(this.state.profileInEdit) ? "Template" : "Class");
+        const tableHeader = structureName + ": " + profile[0].resource.name;
 
         return (
             <div className="content-container">
@@ -106,71 +106,63 @@ export class FHIMProfileEditorForm extends React.Component {
 
     genProfieInputs = (profile) => (
 
-        <table>
-            <tr>
-                <Input
-                    className="input-field"
-                    label="Organization Name"
-                    minLength={1}
-                    defaultValue={profile.resource.publisher}
-                    required={false}
-                    name="organizationName"
-                    onChange={this.onOrganizationNameChange}>
-                </Input>
-            </tr>
-            <tr>
-                <Input
-                    className="input-field"
-                    label="Implementation Guide"
-                    minLength={1}
-                    defaultValue={profile.resource.implicitRules}
-                    required={false}
-                    name="implementationGuide"
-                    onChange={this.onImplementationGuideChange}>
-                </Input>
-            </tr>
-            <tr>
-                <Input
-                    className="input-field"
-                    label="Template Name"
-                    minLength={1}
-                    defaultValue={profile.resource.name}
-                    required={false}
-                    name="templateName"
-                    onChange={this.onTemplateNameChange}>
-                </Input>
-            </tr>
-            <tr>
-                <Input
-                    className="input-field"
-                    label="Template Version"
-                    minLength={1}
-                    defaultValue={profile.resource.version}
-                    required={false}
-                    name="templateVersion"
-                    onChange={this.onTemplateVersionChange}>
-                </Input>
-            </tr>
-        </table>
+        <div>
+        
+            <Input
+                className="input-field"
+                label="Organization Name"
+                minLength={1}
+                defaultValue={profile.resource.publisher}
+                required={false}
+                name="organizationName"
+                onChange={this.onOrganizationNameChange}>
+            </Input>
+            <br /><br />
+            <Input
+                className="input-field"
+                label="Implementation Guide"
+                minLength={1}
+                defaultValue={profile.resource.implicitRules}
+                required={false}
+                name="implementationGuide"
+                onChange={this.onImplementationGuideChange}>
+            </Input>
+            <br /><br />
+            <Input
+                className="input-field"
+                label="Template Name"
+                minLength={1}
+                defaultValue={profile.resource.name}
+                required={false}
+                name="templateName"
+                onChange={this.onTemplateNameChange}>
+            </Input>
+            <br /><br />
+            <Input
+                className="input-field"
+                label="Template Version"
+                minLength={1}
+                defaultValue={profile.resource.version}
+                required={false}
+                name="templateVersion"
+                onChange={this.onTemplateVersionChange}>
+            </Input>
+        </div>
 
     );
 
     listButtons = () => (
-        <table>
-            <tr>
-                <td>
-                    <Button name="canceButton" onClick={this.props.cancel}>Cancel</Button>
-                    &nbsp;&nbsp;
+        <div>
+            <Button name="canceButton" onClick={this.props.cancel}>Cancel</Button>
+            &nbsp;&nbsp;
                 <Button name="updateProfieButton" onClick={this.updateProfile} className="k-button k-primary mt-1 mb-1">Save</Button>
-                    &nbsp;&nbsp;
+            &nbsp;&nbsp;
                 <Button name="genProfileButton"
-                        disabled={!this.validateGenerateProfile()}
-                        onClick={this.generateProfile}
-                        className="k-button k-primary mt-1 mb-1">Generate FHIR Profile</Button>
+                disabled={!this.validateGenerateProfile()}
+                onClick={this.generateProfile}
+                className="k-button k-primary mt-1 mb-1">Generate FHIR Profile</Button>
 
-                </td>
-            </tr>
-        </table>
+        </div>
 
     );
 
@@ -188,7 +180,6 @@ export class FHIMProfileEditorForm extends React.Component {
             return false;
         }
         if (resourceType.endsWith('template')) {
-            console.log("Resource Type: " + " IT IS A TEMPLATE");
             return true;
         }
         console.log("Resource Type: " + resourceType);
@@ -208,11 +199,11 @@ export class FHIMProfileEditorForm extends React.Component {
             profile.resource.implicitRules === '' ||
             profile.resource.name === '' ||
             profile.resource.version === '') {
-                /*
-            console.log("Resurce fields are not defined: "+
-            profile.resource.publisher + " "+profile.resource.implicitRules +
-            profile.resource.name + " "+ profile.resource.versio);
-            */
+            /*
+        console.log("Resurce fields are not defined: "+
+        profile.resource.publisher + " "+profile.resource.implicitRules +
+        profile.resource.name + " "+ profile.resource.versio);
+        */
             return false;
         }
         return true;
@@ -267,7 +258,7 @@ export class FHIMProfileEditorForm extends React.Component {
 
     };
 
-   
+
     onChange(e) {
         this.setState({ value: e.target.value });
     }
@@ -278,19 +269,19 @@ export class FHIMProfileEditorForm extends React.Component {
         this.setState({ organizationName: organizationName });
 
         let profile = this.state.profileInEdit;
-         profile.resource.publisher = this.state.organizationName;
-       
+        profile.resource.publisher = this.state.organizationName;
+
     };
 
 
-    
+
     onImplementationGuideChange = (e) => {
 
         const implementationGuide = e.target.value;
         this.setState({ implementationGuide: implementationGuide });
         let profile = this.state.profileInEdit;
         profile.resource.implicitRules = this.state.implementationGuide;
-        
+
     };
 
     onTemplateNameChange = (e) => {
@@ -299,7 +290,7 @@ export class FHIMProfileEditorForm extends React.Component {
         this.setState({ templateName: templateName });
         let profile = this.state.profileInEdit;
         profile.resource.name = this.state.templateName;
-       
+
     };
 
     onTemplateVersionChange = (e) => {

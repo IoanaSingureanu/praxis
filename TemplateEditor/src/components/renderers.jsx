@@ -67,7 +67,7 @@ export class TableNameHeader extends React.Component {
     render() {
         return (
             <a className="k-link">
-                <span style={{ color: "black", "font-weight": "bold", "font-size": "16px"}}>
+                <span style={{ color: "black", fontWeight: "bold", "font-size": "16px"}}>
                 {this.props.title}</span>
                 {this.props.children}
             </a>

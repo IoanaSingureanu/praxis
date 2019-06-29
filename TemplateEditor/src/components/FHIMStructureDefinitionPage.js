@@ -17,18 +17,17 @@ export class FHIMStructureDefinitionPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            structureDefinitions: { data: [], total: 0 },
+            structureDefinitions: { data: [], total: 0, transactionId:''},
             dataState: { take: 10, skip: 0 },
+            queryDefinition: {searchBy: '', transactionId:''},
             calendarFocused: null,
             searchOn: false,
-            searchBy: '',
             profileInEdit: undefined,
             profiles: undefined,
             rowCount:0,
             show: 1,
             infoMsg: 'INFO Message',
             errorMsg: ''
-            
         };
     }
        
@@ -62,9 +61,8 @@ export class FHIMStructureDefinitionPage extends React.Component {
            </Input>
     
                 &nbsp;&nbsp;
-                
            
-            <Button icon="search" onClick={this.onClick} 
+            <Button icon="search" onClick={this.onSearchClick} 
                      style={{ height: '32px', valign: "bottom", weight: "bold" } }
                      primary={true}>Search</Button>
            
@@ -78,17 +76,15 @@ export class FHIMStructureDefinitionPage extends React.Component {
                
         <Grid       
                     filterable={false}
-                    sortable={false}
+                    sortable={true}
                     pageable={true}
                     resizable={true}
                     {...this.state.dataState}
                     {...this.state.structureDefinitions}
                     onDataStateChange={this.dataStateChange}
-                    rowHeight={2}
-                    skip={this.state.skip}
+                 
                     style={{backgroundColor:"rgb(227, 231, 237)"}}
                                     
-                    selectedField="selected"
                     onRowClick={(e) => {
                         this.setState({ profileInEdit: this.cloneProfile(e.dataItem) })
                     }} 
@@ -100,47 +96,53 @@ export class FHIMStructureDefinitionPage extends React.Component {
                          headerCell={ColumnNameHeader}  cell={StructureTypeCell}/>
 
                 </Grid>
-
-                {this.state.searchOn ? (
+                <div>
+                
+                {
+                    this.state.searchOn ? (
                     
                     <StructureDefinitionsLoader
                         dataState={this.state.dataState}
-                        onDataRecieved={this.dataRecieved}
-                        searchBy={this.state.searchBy}/>) 
-                        : (<p></p>)}
-                      
+                        onDataRecieved={this.dataRecieved} 
+                        queryDefinition={this.state.queryDefinition}                        
+                        />) 
+                        : (<p></p>)
+                }
+                </div>
 
                 <br /><br />
               
                  
-                {this.clearState()}
+              
                 {this.state.profileInEdit &&
                     <FHIMProfileEditorForm dataItem={this.state.profileInEdit} save={this.save} cancel={this.cancel} />}
-               
-              {}
-        
+                   
         </div>
     );
     
 
     dataStateChange = (e) => {
+      
         this.setState({
             ...this.state,
             dataState: e.data
         });
+        
 
     }
 
     dataRecieved = (structureDefinitions) => {
         this.setState({
             ...this.state,
-            structureDefinitions: structureDefinitions
+            structureDefinitions: structureDefinitions,
+            queryDefinition: {transactionId:structureDefinitions.transactionId}
         });
-        console.log("Data Count: "+structureDefinitions.total);
+
     }
 
     pageChange(event) {
 
+        
         this.setState({
             data: this.state.data,
             skip: event.page.skip
@@ -153,7 +155,7 @@ export class FHIMStructureDefinitionPage extends React.Component {
     }
 
     onRowFocusChange = (e) => {
-       console.log("Focus Canged: "+e);
+       console.log("Focus Changed: "+e);
     };
 
     onTextChange = (e) => {
@@ -164,14 +166,17 @@ export class FHIMStructureDefinitionPage extends React.Component {
     onSearchChanged = (e) => {
 
         const searchBy = e.target.value;
-        this.setState({ searchBy: searchBy });
+
+        this.setState({ queryDefinition: {searchBy:searchBy} });
+         
+       
     };
 
-    onClick = (e) => {
+    onSearchClick = (e) => {
         e.preventDefault();
         
         this.setState({ searchOn: true });
-        this.setState({ structureDefinitions: { data: [], total: 0 } });
+       // this.setState({ structureDefinitions: { data: [], total: 0 } });
 
     };
 
