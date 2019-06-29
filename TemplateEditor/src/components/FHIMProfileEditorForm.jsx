@@ -258,10 +258,10 @@ export class FHIMProfileEditorForm extends React.Component {
 
         const profile = this.state.profileInEdit;
       
-
         let errList = '';
         let beginMessage = "Filed: "
         let endMessage = " is required. "
+       
 
         if (profile.resource.publisher.trim() === '') {
             errList += "'Organization Name'";
@@ -331,6 +331,7 @@ export class FHIMProfileEditorForm extends React.Component {
         }
         else
         {
+            // Update
             updateProfile(profile);
         }
 
@@ -350,15 +351,17 @@ export class FHIMProfileEditorForm extends React.Component {
             "." + this.state.templateVersion;
 
         clone.resource.name = newName;
+        clone.resource.version = this.state.templateVersion;
         console.log("Ne Temp : " + newName);
-
-        this.setState({
-            searchOn: true
-        });
 
         console.log("New Name: " + clone.resource.name);
 
         profile = insertProfile(clone);
+
+        
+        this.setState({
+            searchOn: true
+        })
         return clone;
 
     };
