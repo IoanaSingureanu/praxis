@@ -225,30 +225,44 @@ export class FHIMProfileEditorForm extends React.Component {
     validateSaveProfile = (profile) => {
 
         let errList = '';
+        let beginMessage = "Filed: "
+        let endMessage = " is required. "
 
         if (profile.resource.publisher === '')
         {
-            errList += "Publisher";
+            errList += "'Organization Name'";
         }
         if (profile.resource.implicitRules === '')
         {
-          if(errList !='') errList += ", ";
-            errList += "Implicit Rules";
+          if(errList !='') {
+              beginMessage = "Fileds: "
+              endMessage = " are required."
+              errList += ", ";
+          }
+          errList += "'Implementation Guide'";
         }
         if (profile.resource.name === '')
         {
-            if(errList !='') errList += ", ";
-            errList += "Name";
+            if(errList !='') {
+                beginMessage = "Fileds: "
+                endMessage = " are required."
+                errList += ", ";
+            }
+            errList += "'Template Name'";
         }
         if (profile.resource.version === '')
         {
-            if(errList !='') errList += ", ";
-            errList += "Version";
+            if(errList !='') {
+                beginMessage = "Fileds: "
+                endMessage = " are required."
+                errList += ", ";
+            }
+            errList += "'Template Version'";
         }
         
         if(errList != '')
         {
-            alert("Fileds: "+errList+" required.");
+            alert(beginMessage + errList + endMessage);
             return false;
         }
         return true;
