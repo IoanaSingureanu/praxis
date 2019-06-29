@@ -48,17 +48,15 @@ export const infoNotification = (msg) => (
 
 
 export const warnNotification = (msg) => (
-  <Fade enter={true} exit={true}>
-    <NotificationGroup style={position.bottomCenter}>
+     <div>
+    <NotificationGroup style={position.topCenter}>
       <Notification
         type={{ style: 'warning', icon: true }}
-        closable={true}
-
-      >
+        closable={true}>
         <span>{msg}</span>
       </Notification>
     </NotificationGroup>
-  </Fade>
+    </div>
 );
 
 export const errorNotification = (msg) => (

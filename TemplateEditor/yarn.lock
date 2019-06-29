@@ -1483,10 +1483,10 @@
     "@progress/kendo-react-popup" "3.1.0"
     prop-types "^15.6.0"
 
-"@progress/kendo-react-excel-export@^3.1.0":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@progress/kendo-react-excel-export/-/kendo-react-excel-export-3.1.0.tgz#b7713f05653f8f47a09fefbcf30de9c25e26dff1"
-  integrity sha512-ozPiJH6FP+mjwGy/LqIitnu3uGhPsPV2JjMnh5aSRlMa5ZJA+Dl9lt9iKfi2H2mLnPlxK7MAWMiRtTxZMMtMww==
+"@progress/kendo-react-excel-export@^3.2.2":
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/@progress/kendo-react-excel-export/-/kendo-react-excel-export-3.2.2.tgz#f9e3c7f29d52314962dbc90fb22bffcb98aa74d3"
+  integrity sha512-CN4TviY9ZVwKJIb8TSMiFNqLhZ/Y6hazWNEPHlftvfjzIG+qxqlXfutS9+QucBVKPXhBBIAoD0tnfe0qcVb6Cw==
   dependencies:
     "@progress/kendo-file-saver" "^1.0.0"
     "@progress/kendo-ooxml" "^1.0.0"
@@ -1533,10 +1533,10 @@
   dependencies:
     prop-types "^15.6.0"
 
-"@progress/kendo-react-pdf@^3.1.0":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@progress/kendo-react-pdf/-/kendo-react-pdf-3.1.0.tgz#db712f786e4346b88e9d879bda6249bf83eb7895"
-  integrity sha512-0gk2bwLynJm19nYH9ejedYEb+fM77IMwP2XKOfucGarFZliX5dCZgWXLp9vPBL96quAcRyp8LRY+liwFDtAVNA==
+"@progress/kendo-react-pdf@^3.2.2":
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/@progress/kendo-react-pdf/-/kendo-react-pdf-3.2.2.tgz#5be9fa69e15f4a0ba1f6a61872c00eba6478e9fe"
+  integrity sha512-fg7ZudPL3IH4EN98781bsfT/U5OhcXTYFM0GMlrYAMtlPZwlUdBJv6XN9y/NGtfHC44aMGel9CNYDpe4vqpAwA==
   dependencies:
     "@progress/kendo-file-saver" "^1.0.1"
 
