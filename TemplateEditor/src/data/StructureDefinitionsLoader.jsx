@@ -12,7 +12,7 @@ import { infoNotification, warnNotification, errorNotification } from '../action
 export class StructureDefinitionsLoader extends React.Component {
     
    
-    init = { method: 'GET', accept: 'application/fhir+xml;charset=utf-8', headers: {} };
+    init = { method: 'GET', accept: 'application/json;charset=utf-8', headers: {} };
     lastSuccess = '';
     pending = '';
     filter = '';
@@ -31,17 +31,6 @@ export class StructureDefinitionsLoader extends React.Component {
     {
         return  baseURL + '?name:contains='+searchBy;
     }
-/*
-        
-          "url": "http://ocp-apps-elb-811293208.us-east-2.elb.amazonaws.com:8082/fhir/baseDstu3?
-
-           _getpages=0aa788b3-e299-4bc8-a540-efd2c653e9da
-            &_getpagesoffset=10
-            &_count=10
-            &_pretty=true
-            &_bundletype=searchset"
-    
-*/
 
     getChunck = (queryDefinition, dataState) =>
     {
@@ -58,10 +47,6 @@ export class StructureDefinitionsLoader extends React.Component {
 
         let searchBy = this.props.queryDefinition.searchBy;
         let transactionId = this.props.queryDefinition.transactionId;
-      
-      //  console.log("Data Request If Needed, Data State: "+toODataString(this.props.dataState) );
-      //  console.log("Data Request If Needed, Query Definition: "+toODataString(this.props.queryDefinition));
-
 
         if(!searchBy)
         {

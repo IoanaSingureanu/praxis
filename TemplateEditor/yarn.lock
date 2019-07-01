@@ -1369,7 +1369,7 @@
   dependencies:
     pako "^1.0.5"
 
-"@progress/kendo-file-saver@^1.0.0", "@progress/kendo-file-saver@^1.0.1":
+"@progress/kendo-file-saver@^1.0.0", "@progress/kendo-file-saver@^1.0.1", "@progress/kendo-file-saver@^1.0.7":
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/@progress/kendo-file-saver/-/kendo-file-saver-1.0.7.tgz#5b602115d1b0b5e26f3e52451a3ed7c29ed76c51"
   integrity sha512-8tsho/+DATzfTW4BBaHrkF3C3jqH2/bQ+XbjqA0KfmTiBRVK6ygK+tkvkYeDhFlQBbJ02MmJlEC6OmXvXRFkUg==

@@ -5,9 +5,11 @@ import { GridColumn as Column, Grid, GridToolbar } from '@progress/kendo-react-g
 import { Button } from '@progress/kendo-react-buttons';
 import { Popup } from '@progress/kendo-react-popup';
 import { Input } from '@progress/kendo-react-inputs';
+import { ExcelExport } from '@progress/kendo-react-excel-export';
+
 
 import { TableNameHeader, ColumnNameHeader, Renderers } from './renderers.jsx';
-import { updateProfile, insertProfile } from '../data/SaveProfile.jsx';
+import { updateProfile, insertProfile, saveProfileToFile} from '../data/SaveProfile.jsx';
 import { infoMessage, warnMessage, errorMessage, warnNotification } from '../actions/notifications';
 
 export class FHIMProfileEditorForm extends React.Component {
@@ -38,7 +40,11 @@ export class FHIMProfileEditorForm extends React.Component {
         this.onTemplateNameChange = this.onTemplateNameChange.bind(this);
         this.onTemplateVersionChange = this.onTemplateVersionChange.bind(this);
     }
-
+    _export;
+    export = (e) => {
+        e.preventDefault();
+        this._export.save();
+    }
 
     render() {
 
@@ -67,31 +73,32 @@ export class FHIMProfileEditorForm extends React.Component {
                     popupClass={'popup-content'} >
                     {this.initWidget(profile)}
                     <form onSubmit={this.handleSubmit} className="k-form">
-
-                        <Grid
-                            style={{ backgroundColor: "rgb(227, 231, 237)" }}
+                        <ExcelExport  
                             data={this.state.data}
-                            rowHeight={2}
-                            onItemChange={this.itemChange}
-                            filterable={false}
-                            sortable={true}
-                            resizable={true}
-                            editField="inEdit">
-                            <Column headerCell={TableNameHeader} title={tableHeader} >
-                                <Column headerCell={ColumnNameHeader} title="Data Element" field="id" editable={false} />
-                                <Column headerCell={ColumnNameHeader} title="Type" field="type" editable={true} cell={TypeCell} />
-                                <Column headerCell={ColumnNameHeader} title="Usage" field="extensions" editable={true} cell={UsageDownCell} />
-                            </Column>
-                            <GridToolbar>
-
-                            </GridToolbar>
-                        </Grid>
-
+                            ref={(exporter) => { this._export = exporter; }}>
+                            <Grid
+                                style={{ backgroundColor: "rgb(227, 231, 237)", height: "70%" }}
+                                data={this.state.data}
+                                rowHeight={1}
+                                onItemChange={this.itemChange}
+                                filterable={false}
+                                sortable={true}
+                                resizable={true}
+                                editField="inEdit">
+                                <Column headerCell={TableNameHeader} title={tableHeader} >
+                                    <Column headerCell={ColumnNameHeader} title="Data Element" field="id" editable={false} />
+                                    <Column headerCell={ColumnNameHeader} title="Type" field="type" editable={true} cell={TypeCell} />
+                                    <Column headerCell={ColumnNameHeader} title="Usage" field="extensions" editable={true} cell={UsageDownCell} />
+                                </Column>
+                                    <GridToolbar>
+                                    <div align="right">
+                                         {this.listButtons()}
+                                    </div>   
+                                    </GridToolbar>                                                           
+                            </Grid>
+                        </ExcelExport>
                         <div align="left">
                             {this.genProfieInputs(profile[0])}
-                        </div>
-                        <div align="right">
-                            {this.listButtons()}
                         </div>
                     </form>
                 </Popup>
@@ -162,11 +169,11 @@ export class FHIMProfileEditorForm extends React.Component {
 
     listButtons = () => (
         <div>
-            <Button name="updateProfieButton"
+           <Button name="updateProfieButton"
                 disabled={!this.enableSaveProfile()}
                 onClick={this.updateProfile} className="k-button k-primary mt-1 mb-1">Save</Button>
             &nbsp;&nbsp;
-        <Button name="genProfileButton"
+           <Button name="genProfileButton"
                 disabled={!this.enableGenerateProfile()}
                 onClick={this.generateProfile}
                 className="k-button k-primary mt-1 mb-1">Generate FHIR Profile</Button>
@@ -178,9 +185,12 @@ export class FHIMProfileEditorForm extends React.Component {
     );
 
     generateProfile = (e) => {
-        console.log("Generate profile not implemented");
+        e.preventDefault();
+        const profile = this.state.profileInEdit
+        console.log("Executing Generate profile");
         //get profile from the server
         //save profile to disk
+        saveProfileToFile(profile);
     }
 
     isObjectTemplateType = (profile) => {
@@ -271,10 +281,10 @@ export class FHIMProfileEditorForm extends React.Component {
         let endMessage = " is required. "
 
 
-        if (profile.resource.publisher.trim() === '') {
+        if (profile.resource.publisher=== '') {
             errList += "'Organization Name'";
         }
-        if (profile.resource.implicitRules.trim() === '') {
+        if (profile.resource.implicitRules === '') {
             if (errList != '') {
                 beginMessage = "Fileds: "
                 endMessage = " are required."
@@ -396,8 +406,6 @@ export class FHIMProfileEditorForm extends React.Component {
         profile.resource.publisher = organizationName;
 
     };
-
-
 
     onImplementationGuideChange = (e) => {
 
