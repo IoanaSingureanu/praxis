@@ -1,6 +1,6 @@
 import { baseURL } from './properties';
 import { infoMessage, errorMessage } from '../actions/notifications';
-import { saveAs, encodeBase64 } from '@progress/kendo-file-saver';
+
 
 
 export const updateProfile = (dataItem) => {
@@ -57,9 +57,11 @@ export const saveProfileToFile = (dataItem) => {
     const endpoint = baseURL + id;
     const fileDest = "profile-" + id + ".txt";
 
-    saveAs(endpoint, fileDest);
+   // saveAs(endpoint, fileDest);
     
     console.log("Save AS " + endpoint + fileDest);
+    let win = window.open(endpoint, '_blank');
+    win.focus();
 }
 
 export const showObject = (endpoint, item) => {

@@ -174,7 +174,6 @@ export class FHIMProfileEditorForm extends React.Component {
                 onClick={this.updateProfile} className="k-button k-primary mt-1 mb-1">Save</Button>
             &nbsp;&nbsp;
            <Button name="genProfileButton"
-                disabled={!this.enableGenerateProfile()}
                 onClick={this.generateProfile}
                 className="k-button k-primary mt-1 mb-1">Generate FHIR Profile</Button>
             &nbsp;&nbsp;
