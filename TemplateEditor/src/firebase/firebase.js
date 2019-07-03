@@ -13,15 +13,8 @@ const config = {
 // Initialize Firebase
 firebase.initializeApp(config);
 
-// Add first Entry
-
-var email = 'praxis.editor@gmail.com';
-var password = 'pixel&velevet$';
-
 const database = firebase.database();
 const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
-const signInWithEmailAndPassword = new firebase.auth().signInWithEmailAndPassword(email, password);
 
-
-export { firebase, googleAuthProvider, signInWithEmailAndPassword, database as default };
+export { firebase, googleAuthProvider, database as default };
 
