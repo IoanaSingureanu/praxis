@@ -53,10 +53,10 @@ export class Renderers {
 export class ColumnNameHeader extends React.Component {
     render() {
         return (
-            <a className="k-link" onClick={this.props.onClick}>
+            <div className="k-link" onClick={this.props.onClick}>
                 <span style={{ color: "black", fontWeight: "bold", "font-size": "14px"}}>{this.props.title}</span>               
                 {this.props.children}
-            </a>
+            </div>
         );
     }
 }
@@ -64,11 +64,11 @@ export class ColumnNameHeader extends React.Component {
 export class TableNameHeader extends React.Component {
     render() {
         return (
-            <a className="k-link">
+            <div className="k-link">
                 <span style={{ color: "black", fontWeight: "bold", "font-size": "14px"}}>
                 {this.props.title}</span>
                 {this.props.children}
-            </a>
+            </div>
         );
     }
 }

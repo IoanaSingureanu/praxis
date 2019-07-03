@@ -1,10 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
-
 import { toODataString } from '@progress/kendo-data-query';
-
-
 import { baseURL } from './properties';
 import { errorMessage } from '../actions/notifications';
 import { infoNotification, warnNotification, errorNotification } from '../actions/notifications';
@@ -46,7 +43,7 @@ export class StructureDefinitionsLoader extends React.Component {
     requestDataIfNeeded = () => {
 
         let searchBy = this.props.queryDefinition.searchBy;
-        let transactionId = this.props.queryDefinition.transactionId;
+        //let transactionId = this.props.queryDefinition.transactionId;
 
         if(!searchBy)
         {
@@ -56,7 +53,7 @@ export class StructureDefinitionsLoader extends React.Component {
        
         let url = this.buildQuery(searchBy);
         
-        if(searchBy != '' && searchBy != this.searchBy)
+        if(searchBy !== '' && searchBy !== this.searchBy)
         {
             this.initData(searchBy);
            

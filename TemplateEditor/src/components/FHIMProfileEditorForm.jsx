@@ -177,7 +177,7 @@ export class FHIMProfileEditorForm extends React.Component {
                 onClick={this.generateProfile}
                 className="k-button k-primary mt-1 mb-1">Generate FHIR Profile</Button>
             &nbsp;&nbsp;
-            <Button name="canceButton" onClick={this.props.cancel}>Cancel</Button>
+            <Button name="cancelButton" onClick={this.props.cancel}>Cancel</Button>
 
         </div>
 
@@ -276,7 +276,7 @@ export class FHIMProfileEditorForm extends React.Component {
         const profile = this.state.profileInEdit;
 
         let errList = '';
-        let beginMessage = "Filed: "
+        let beginMessage = "Field: "
         let endMessage = " is required. "
 
 
@@ -284,16 +284,16 @@ export class FHIMProfileEditorForm extends React.Component {
             errList += "'Organization Name'";
         }
         if (profile.resource.implicitRules === '') {
-            if (errList != '') {
-                beginMessage = "Fileds: "
+            if (errList !== '') {
+                beginMessage = "Fieeds: "
                 endMessage = " are required."
                 errList += ", ";
             }
             errList += "'Implementation Guide'";
         }
         if (profile.resource.name.trim() === '') {
-            if (errList != '') {
-                beginMessage = "Fileds: "
+            if (errList !== '') {
+                beginMessage = "Fields: "
                 endMessage = " are required."
                 errList += ", ";
             }
@@ -301,15 +301,15 @@ export class FHIMProfileEditorForm extends React.Component {
         }
         if (this.state.templateVersion === '' &&
             this.getVersion(profile.resource.name) === '') {
-            if (errList != '') {
-                beginMessage = "Fileds: "
+            if (errList !== '') {
+                beginMessage = "Fields: "
                 endMessage = " are required."
                 errList += ", ";
             }
             errList += "'Template Version'";
         }
 
-        if (errList != '') {
+        if (errList !== '') {
             const err = beginMessage + errList + endMessage;
             if (showError) {
 
