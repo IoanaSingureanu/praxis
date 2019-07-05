@@ -78,9 +78,8 @@ export class FHIMProfileEditorForm extends React.Component {
                    
                    
                     <div className="k-form" align="center">
-                         
                         <Grid
-                            style={{backgroundColor:"rgb(227, 231, 237)", width: '950px'}}
+                            style={{ width: '950px' }}
                             rowHeight={pageSize}
                             data={availableElements.slice(this.state.skip, this.state.skip + pageSize)}
                             pageSize={pageSize}
@@ -91,11 +90,11 @@ export class FHIMProfileEditorForm extends React.Component {
                             resizable={true}
                             onItemChange={this.itemChange}
                             editField="inEdit" >
-                            <Column headerCell={TableNameHeader} title={tableHeader}>
+
                             <Column headerCell={ColumnNameHeader} title="Data Element" field="id" editable={false} />
                             <Column headerCell={ColumnNameHeader} title="Type" field="type" editable={true} cell={TypeCell} />
                             <Column headerCell={ColumnNameHeader} title="Usage" field="extensions" editable={true} cell={UsageDownCell} />
-                            </Column>
+
                         </Grid>
                         <br />
                         <div align="left">
@@ -360,7 +359,7 @@ export class FHIMProfileEditorForm extends React.Component {
         }
 
         profile.resource.name =
-            this.buildTemplateName(res, this.state.templateTitle, this.state.templateVersion);
+            this.buildTemplateName(res, res.title, this.state.templateVersion);
 
         if (this.isObjectClassType(profile)) {
             // Create template first          

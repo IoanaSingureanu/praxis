@@ -136,21 +136,18 @@ export class FHIMStructureDefinitionPage extends React.Component {
                 <div>
                 
                 {
-                    this.state.searchOn ? (
+                  (this.state.searchOn) ? (
                     
-                    <StructureDefinitionsLoader
-                        dataState={this.state.dataState}
-                        onDataRecieved={this.dataRecieved} 
-                        queryDefinition={this.state.queryDefinition}  
-                        sort={this.state.sort}                       
-                        />) 
-                        : (<p></p>)
+                       <StructureDefinitionsLoader
+                          dataState={this.state.dataState}
+                          onDataRecieved={this.dataRecieved} 
+                          queryDefinition={this.state.queryDefinition}  
+                          sort={this.state.sort}                       
+                        />)  : (<p></p>)
                 }
                 </div>
 
                 <br /><br />
-              
-                 
               
                 {this.state.profileInEdit &&
                     <FHIMProfileEditorForm dataItem={this.state.profileInEdit} save={this.save} cancel={this.cancel} />}
@@ -258,32 +255,7 @@ export class FHIMStructureDefinitionPage extends React.Component {
         
     }
 
-    save_ = () => {
-
-        const dataItem = this.state.profileInEdit;
-        const profiles = this.state.structureDefinitions.data;
-
-      
-        if (dataItem.resource.id === undefined) {
-            profiles.unshift(this.newProfie(dataItem));
-            console.log("NOT DEFINED: Saving Profile: ClassName: " + dataItem.resource.name);
-        }
-        else {
-
-            const index = profiles.findIndex(p => p.resource.id === dataItem.resource.id);
-           // TODO
-            console.log("SAVE HERE PROFILE TO SERVER ID: "+index)
-            profiles.splice(index, 1, dataItem);
-
-
-        }
-        this.setState({
-            profiles: profiles,
-            profileInEdit: undefined
-        });
-    }
-
-    save = () => {
+     save = () => {
 
         const profiles = this.state.structureDefinitions.data;
 
@@ -367,9 +339,9 @@ const mapStateToProps = (state, props) => ({
    
   });
   
-  const mapDispatchToProps = (dispatch, props) => ({
+const mapDispatchToProps = (dispatch, props) => ({
    
   });
   
-  export default connect(mapStateToProps, mapDispatchToProps)(FHIMStructureDefinitionPage);
+ export default connect(mapStateToProps, mapDispatchToProps)(FHIMStructureDefinitionPage);
   
