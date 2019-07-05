@@ -114,8 +114,11 @@ export class FHIMProfileEditorForm extends React.Component {
                             {this.genProfieInputs(profile[0])}
                         </div>
                     </div>
-                    <div style={{backgroundColor:"rgb(227, 231, 237)",color:"black", fontWeight: "bold", "font-size": "14px"}}>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{tableHeader}
+                    <div style={{backgroundColor:"rgb(227, 231, 237)"}}>
+                        <div
+                         style={{"margin-left": "40px", color:"black", fontWeight: "bold", "font-size": "14px"}}>
+                         {tableHeader}
+                         </div>
                     </div>
                 </Popup>
             </div>
