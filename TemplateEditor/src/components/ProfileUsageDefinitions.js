@@ -1,5 +1,5 @@
 export const UsageOptions = [
     'Supported',
-    'Unsupported',
+    'Excluded',
     'Mandatory'
 ];
