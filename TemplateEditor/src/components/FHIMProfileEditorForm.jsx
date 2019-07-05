@@ -81,7 +81,7 @@ export class FHIMProfileEditorForm extends React.Component {
                     }}
                     popupClass={'popup-content'} >
                     {this.initWidget(profile)}
-                    <div className="k-form">
+                    <div className="k-form" align="center">
                    
                         <Grid
                             style={{ width: '950px'}}
@@ -91,10 +91,7 @@ export class FHIMProfileEditorForm extends React.Component {
                             total={availableElements.length}
                             skip={this.state.skip}
                             pageable={true}
-                            
-                            
                             onPageChange={this.pageChange}
-                          
                             resizable={true}
                             onItemChange={this.itemChange}
                             editField="inEdit" >
@@ -116,7 +113,7 @@ export class FHIMProfileEditorForm extends React.Component {
                     </div>
                     <div style={{backgroundColor:"rgb(227, 231, 237)"}}>
                         <div
-                         style={{"margin-left": "40px", color:"black", fontWeight: "bold", "font-size": "14px"}}>
+                         style={{"margin-left": "60px", color:"black", fontWeight: "bold", "font-size": "14px"}}>
                          {tableHeader}
                          </div>
                     </div>
