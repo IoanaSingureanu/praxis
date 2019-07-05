@@ -27,7 +27,10 @@ export class FHIMStructureDefinitionPage extends React.Component {
             rowCount:0,
             show: 1,
             infoMsg: 'INFO Message',
-            errorMsg: ''
+            errorMsg: '',
+            sort: [
+                { field: 'name', dir: 'asc' }
+            ]
         };
     }
        
@@ -76,7 +79,6 @@ export class FHIMStructureDefinitionPage extends React.Component {
                
         <Grid       
                     filterable={false}
-                    sortable={false}
                     pageable={true}
                     resizable={true}
                     {...this.state.dataState}
@@ -88,6 +90,41 @@ export class FHIMStructureDefinitionPage extends React.Component {
                     onRowClick={(e) => {
                         this.setState({ profileInEdit: this.cloneProfile(e.dataItem) })
                     }} 
+                    sortable
+                    sort={this.state.sort}
+                    onSortChange={(e) => {
+                        let fn  = this.state.sort[0].field;
+                        if(e.sort[0] && e.sort[0].field)
+                        {
+                            fn = e.sort[0].field;
+                            const dir = e.sort[0].dir;
+                            if(fn.length > 0)
+                            {
+                                 this.setState({
+                                     sort: e.sort
+                                });
+                            }
+                        }
+                        else if(this.state.sort[0].dir === 'desc')
+                        {
+                           
+                            this.setState({
+                                sort: [
+                                      { field:fn, dir: 'asc' }
+                                    ]
+                                });
+                        }
+                        else
+                        {
+                           
+                            this.setState({
+                                sort: [
+                                      { field:fn, dir: 'desc' }
+                                    ]
+                                });
+                        }
+                       
+                      }}
                     >
                     
                     <Column field="resource.name" filter="text" title="Structure Name"    
@@ -104,7 +141,8 @@ export class FHIMStructureDefinitionPage extends React.Component {
                     <StructureDefinitionsLoader
                         dataState={this.state.dataState}
                         onDataRecieved={this.dataRecieved} 
-                        queryDefinition={this.state.queryDefinition}                        
+                        queryDefinition={this.state.queryDefinition}  
+                        sort={this.state.sort}                       
                         />) 
                         : (<p></p>)
                 }
@@ -188,15 +226,12 @@ export class FHIMStructureDefinitionPage extends React.Component {
     };
 
     clearStatusMsg = () => {
-
         this.state.infoMsg = '';
         this.state.errorMsg = '';
     };
 
 
     edit = (dataItem) => {
-
-
         this.setState({ profileInEdit: this.cloneProfile(dataItem) });
     }
 
@@ -237,7 +272,7 @@ export class FHIMStructureDefinitionPage extends React.Component {
 
             const index = profiles.findIndex(p => p.resource.id === dataItem.resource.id);
            // TODO
-            console.log("SVAE HERE PROFILE TO SERVER ID: "+index)
+            console.log("SAVE HERE PROFILE TO SERVER ID: "+index)
             profiles.splice(index, 1, dataItem);
 
 

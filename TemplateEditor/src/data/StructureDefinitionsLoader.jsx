@@ -4,8 +4,6 @@ import { connect } from 'react-redux';
 import { toODataString } from '@progress/kendo-data-query';
 import { baseURL } from './properties';
 import { errorMessage } from '../actions/notifications';
-import { infoNotification, warnNotification, errorNotification } from '../actions/notifications';
-
 export class StructureDefinitionsLoader extends React.Component {
     
    
@@ -14,27 +12,31 @@ export class StructureDefinitionsLoader extends React.Component {
     pending = '';
     filter = '';
     searchBy = '';
-    transactionId = '';
+    sortColumn='name';
+    sortDir=''
 
-    initData = (searchBy) =>
+    initData = (searchBy, sortColumn, sortDir) =>
     {
         this.lastSuccess = '';
         this.pending = '';
         this.filter = '';
         this.searchBy = searchBy;
+        this.sortColumn = sortColumn;
+        this.sortDir = sortDir;
     }
 
-    buildQuery = (searchBy) =>
+    buildQuery = (searchBy, sortColumn, sortDir) =>
     {
-        return  baseURL + '?name:contains='+searchBy;
+        return  baseURL + '?name:contains='+searchBy + '&_sort='+sortDir+sortColumn;
     }
 
-    getChunck = (queryDefinition, dataState) =>
+    getChunck = (queryDefinition, dataState, sortColumn, sortDir) =>
     {
         const endpoint =
           baseURL + '?_getpages='+queryDefinition.transactionId+
                     '&_getpagesoffset=' + dataState.skip+
                     '&_count='+dataState.take+
+                    '&_sort='+sortDir+sortColumn+
                     '&_pretty=true'+
                     '&_bundletype=searchset';
         return endpoint;
@@ -43,19 +45,45 @@ export class StructureDefinitionsLoader extends React.Component {
     requestDataIfNeeded = () => {
 
         let searchBy = this.props.queryDefinition.searchBy;
-        //let transactionId = this.props.queryDefinition.transactionId;
+        let sortColumn = this.props.sortColumn;
+        let sortDir = this.props.sortDir;
+        
+
+         const s = this.props.sort[0].field;
+         let dir = this.props.sort[0].dir;
+        
+
+         if(s.length > 0)
+         {                 
+                const field = s.split('.');
+                sortColumn = field[field.length-1];
+                if(dir === 'desc')
+                {
+                    sortDir= "-";
+                }
+                else
+                {
+                    sortDir= "";
+                }
+               
+                                        
+        }
+    
 
         if(!searchBy)
         {
-            console.log("Data Request If Needed SearchBy not Defined, local: "+this.searchBy);
+            // console.log("Data Request If Needed SearchBy not Defined, local: "+this.searchBy);
             searchBy = this.searchBy;
         }
-       
-        let url = this.buildQuery(searchBy);
+               
+        let url = this.buildQuery(searchBy, sortColumn, sortDir);
         
-        if(searchBy !== '' && searchBy !== this.searchBy)
+        
+        if( (searchBy !== '' && searchBy !== this.searchBy) || 
+            (sortColumn !== this.sortColumn) ||
+            ( sortDir !== this.sortDir))
         {
-            this.initData(searchBy);
+            this.initData(searchBy, sortColumn, sortDir);
            
             console.log("New Query: "+url);
         }
@@ -68,7 +96,7 @@ export class StructureDefinitionsLoader extends React.Component {
                  return;
         }
         else {
-            url = this.getChunck(this.props.queryDefinition, this.props.dataState);
+            url = this.getChunck(this.props.queryDefinition, this.props.dataState, sortColumn, sortDir);
             console.log("Chunck Query: "+url);
         }
         

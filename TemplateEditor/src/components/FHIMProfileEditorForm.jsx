@@ -1,16 +1,21 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
+
 import { connect } from 'react-redux';
 import { DropDownList } from '@progress/kendo-react-dropdowns';
 import { GridColumn as Column, Grid, GridToolbar } from '@progress/kendo-react-grid';
 import { Button } from '@progress/kendo-react-buttons';
 import { Popup } from '@progress/kendo-react-popup';
 import { Input } from '@progress/kendo-react-inputs';
-import { ExcelExport } from '@progress/kendo-react-excel-export';
 
 
 import { TableNameHeader, ColumnNameHeader, Renderers } from './renderers.jsx';
-import { updateProfile, insertProfile, saveProfileToFile} from '../data/SaveProfile.jsx';
+import { updateProfile, insertProfile, saveProfileToFile } from '../data/SaveProfile.jsx';
 import { infoMessage, warnMessage, errorMessage, warnNotification } from '../actions/notifications';
+
+let availableElements;
+const pageSize = 10;
+
 
 export class FHIMProfileEditorForm extends React.Component {
 
@@ -27,9 +32,12 @@ export class FHIMProfileEditorForm extends React.Component {
             implementationGuide: '',
             templateName: '',
             templateVersion: '',
-            value: ''
+            value: '',
+            skip: 0
+
         };
 
+        this.pageChange = this.pageChange.bind(this);
         this.saveChanges = this.saveChanges.bind(this);
         this.cancelChanges = this.cancelChanges.bind(this);
         this.itemChange = this.itemChange.bind(this);
@@ -40,13 +48,14 @@ export class FHIMProfileEditorForm extends React.Component {
         this.onTemplateNameChange = this.onTemplateNameChange.bind(this);
         this.onTemplateVersionChange = this.onTemplateVersionChange.bind(this);
     }
-    _export;
-    export = (e) => {
-        e.preventDefault();
-        this._export.save();
-    }
 
+    
     render() {
+
+        const gridScrollbar = {
+            width: 1000,
+            height: 400,
+          };
 
         const profile = [this.state.profileInEdit];
         let structureName = "Structure";
@@ -72,43 +81,65 @@ export class FHIMProfileEditorForm extends React.Component {
                     }}
                     popupClass={'popup-content'} >
                     {this.initWidget(profile)}
-                    <form onSubmit={this.handleSubmit} className="k-form">
-                        <ExcelExport  
-                            data={this.state.data}
-                            ref={(exporter) => { this._export = exporter; }}>
-                            <Grid
-                                style={{ backgroundColor: "rgb(227, 231, 237)", height: "70%" }}
-                                data={this.state.data}
-                                rowHeight={1}
-                                onItemChange={this.itemChange}
-                                filterable={false}
-                                sortable={true}
-                                resizable={true}
-                                editField="inEdit">
-                                <Column headerCell={TableNameHeader} title={tableHeader} >
-                                    <Column headerCell={ColumnNameHeader} title="Data Element" field="id" editable={false} />
-                                    <Column headerCell={ColumnNameHeader} title="Type" field="type" editable={true} cell={TypeCell} />
-                                    <Column headerCell={ColumnNameHeader} title="Usage" field="extensions" editable={true} cell={UsageDownCell} />
-                                </Column>
-                                    <GridToolbar>
-                                    <div align="right">
-                                         {this.listButtons()}
-                                    </div>   
-                                    </GridToolbar>                                                           
-                            </Grid>
-                        </ExcelExport>
-                        <div align="left">
+                    <div className="k-form">
+                   
+                        <Grid
+                            style={{ width: '1000px', height: '450px'}}
+                            rowHeight={pageSize}
+                            data={availableElements.slice(this.state.skip, this.state.skip + pageSize)}
+                            pageSize={pageSize}
+                            total={availableElements.length}
+                            skip={this.state.skip}
+                            pageable={true}
+                            
+                            scrollable={'virtual'}
+                            onPageChange={this.pageChange}
+                          
+                            resizable={true}
+                            onItemChange={this.itemChange}
+                            editField="inEdit" >
+                            
+                            <Column headerCell={ColumnNameHeader} title="Data Element" field="id" editable={false} />
+                            <Column headerCell={ColumnNameHeader} title="Type" field="type" editable={true} cell={TypeCell} />
+                            <Column headerCell={ColumnNameHeader} title="Usage" field="extensions" editable={true} cell={UsageDownCell} />
+                           
+                            <GridToolbar>
+                                <div align="right">
+                                    {this.listButtons(tableHeader)}
+                                </div>
+                            </GridToolbar>
+                        </Grid>
+                       <div align="left">
                             {this.genProfieInputs(profile[0])}
                         </div>
-                    </form>
+                    </div>
+                    <div style={{backgroundColor:"rgb(227, 231, 237)",color:"black", fontWeight: "bold", "font-size": "14px"}}>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{tableHeader}
+                    </div>
                 </Popup>
             </div>
         );
     }
 
+
+
     initWidget = (profile) => {
         if (profile[0] && profile[0].resource.snapshot && profile[0].resource.snapshot) {
             this.state.data = profile[0].resource.snapshot.element;
+            const extension = this.state.data[0].extension;
+            const len = this.state.data.length;
+
+            if (extension && extension[0] && extension[0].valueString !== '') {
+
+                availableElements = this.state.data.slice();
+            }
+            else {
+                availableElements = this.state.data.slice(1, len);
+            }
+            console.log("INIT Widget Element Length: " + availableElements.length +
+                "  From " + this.state.data.length + " Scroll Window Size: " + pageSize);
+
+           
         }
         else {
             warnNotification("Missing Data Elements From the Structure: ");
@@ -167,9 +198,10 @@ export class FHIMProfileEditorForm extends React.Component {
 
     );
 
-    listButtons = () => (
+    listButtons = (tableHeader) => (
         <div>
-           <Button name="updateProfieButton"
+            
+            <Button name="updateProfieButton"
                 disabled={!this.enableSaveProfile()}
                 onClick={this.updateProfile} className="k-button k-primary mt-1 mb-1">Save</Button>
             &nbsp;&nbsp;
@@ -177,10 +209,9 @@ export class FHIMProfileEditorForm extends React.Component {
                 onClick={this.generateProfile}
                 className="k-button k-primary mt-1 mb-1">Generate FHIR Profile</Button>
             &nbsp;&nbsp;
-            <Button name="cancelButton" onClick={this.props.cancel}>Cancel</Button>
+            <Button name="cancelButton" onClick={this.props.cancel} className="k-button k-primary mt-1 mb-1">Cancel</Button>
 
         </div>
-
     );
 
     generateProfile = (e) => {
@@ -280,7 +311,7 @@ export class FHIMProfileEditorForm extends React.Component {
         let endMessage = " is required. "
 
 
-        if (profile.resource.publisher=== '') {
+        if (profile.resource.publisher === '') {
             errList += "'Organization Name'";
         }
         if (profile.resource.implicitRules === '') {
@@ -355,7 +386,7 @@ export class FHIMProfileEditorForm extends React.Component {
                 this.state.templateVersion);
 
         if (this.isObjectClassType(profile)) {
-            // create tempate first          
+            // Create template first          
             profile = this.createTemplate(profile);
         }
         else if (this.isObjectTemplateType(profile)) {
@@ -477,7 +508,15 @@ export class FHIMProfileEditorForm extends React.Component {
         });
     }
 
+    pageChange(event) {
+        console.log("Page Change Event");
+        this.setState({
+            skip: event.page.skip
+        });
+    }
+
     itemChange(event) {
+        console.log("Item Change Event");
         event.dataItem[event.field] = event.value;
         this.setState({
             changes: true
