@@ -394,6 +394,7 @@ export class FHIMProfileEditorForm extends React.Component {
         console.log("Before: " + profile.resource.type);
         let clone = cloneProfile(profile);
         let res = clone.resource;
+        clone.resource.id='';
         clone.resource.type = clone.resource.type.replace('class', 'template');
         clone.resource.version = this.state.templateVersion;
         clone.resource.name =
