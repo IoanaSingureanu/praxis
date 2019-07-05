@@ -109,6 +109,7 @@ export class FHIMProfileEditorForm extends React.Component {
                                 </div>
                             </GridToolbar>
                         </Grid>
+                        <br/>
                        <div align="left">
                             {this.genProfieInputs(profile[0])}
                         </div>
