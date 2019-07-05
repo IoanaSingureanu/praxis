@@ -13,8 +13,8 @@ import { TableNameHeader, ColumnNameHeader, Renderers } from './renderers.jsx';
 import { updateProfile, insertProfile, saveProfileToFile } from '../data/SaveProfile.jsx';
 import { infoMessage, warnMessage, errorMessage, warnNotification } from '../actions/notifications';
 
-let availableElements;
-const pageSize = 10;
+let availableElements = [];
+const pageSize = 6;
 
 
 export class FHIMProfileEditorForm extends React.Component {
@@ -84,7 +84,7 @@ export class FHIMProfileEditorForm extends React.Component {
                     <div className="k-form">
                    
                         <Grid
-                            style={{ width: '1000px', height: '450px'}}
+                            style={{ width: '950px'}}
                             rowHeight={pageSize}
                             data={availableElements.slice(this.state.skip, this.state.skip + pageSize)}
                             pageSize={pageSize}
@@ -92,7 +92,7 @@ export class FHIMProfileEditorForm extends React.Component {
                             skip={this.state.skip}
                             pageable={true}
                             
-                            scrollable={'virtual'}
+                            
                             onPageChange={this.pageChange}
                           
                             resizable={true}
@@ -124,6 +124,8 @@ export class FHIMProfileEditorForm extends React.Component {
 
 
     initWidget = (profile) => {
+        
+        
         if (profile[0] && profile[0].resource.snapshot && profile[0].resource.snapshot) {
             this.state.data = profile[0].resource.snapshot.element;
             const extension = this.state.data[0].extension;
@@ -137,9 +139,8 @@ export class FHIMProfileEditorForm extends React.Component {
                 availableElements = this.state.data.slice(1, len);
             }
             console.log("INIT Widget Element Length: " + availableElements.length +
-                "  From " + this.state.data.length + " Scroll Window Size: " + pageSize);
-
-           
+                "  From " + this.state.data.length + " Scroll Window Size: " + pageSize
+                + " Skip: "+this.state.skip);
         }
         else {
             warnNotification("Missing Data Elements From the Structure: ");
@@ -509,7 +510,8 @@ export class FHIMProfileEditorForm extends React.Component {
     }
 
     pageChange(event) {
-        console.log("Page Change Event");
+       console.log("Page Change Event: Skip: " +event.page.skip);
+       
         this.setState({
             skip: event.page.skip
         });
