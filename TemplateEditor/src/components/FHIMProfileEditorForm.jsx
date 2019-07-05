@@ -170,7 +170,7 @@ export class FHIMProfileEditorForm extends React.Component {
                 style={{ width: "55%" }}
                 label="Profile Name"
                 minLength={1}
-                defaultValue={profile.resource.title}
+                defaultValue={this.getTemplateTitle(profile.resource.name)}
                 required={true}
                 name="templateTitle"
                 disabled={!this.enableInputRestrictFields()}
@@ -266,6 +266,7 @@ export class FHIMProfileEditorForm extends React.Component {
         }
         return false;
     }
+    
     enableInputRestrictFields = () => {
 
         return this.enableInputFields();
@@ -345,8 +346,20 @@ export class FHIMProfileEditorForm extends React.Component {
         console.log("TEMPLATE NAME: " + newName);
         return newName;
 
-
     }
+
+    getTemplateTitle = (name) => {
+
+        const res = name.split('.');
+        let title = 'title';
+
+        if (res.length > 0) {
+            title = res[0];
+        }
+        console.log("Get Template: Name: Old Name: " + title);
+        return title;
+    }
+
     updateProfile = (e) => {
 
         e.preventDefault();
