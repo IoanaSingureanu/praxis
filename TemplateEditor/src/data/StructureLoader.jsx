@@ -141,10 +141,10 @@ export class StructureLoader extends React.Component {
 class LoadingPanel extends React.Component {
     render() {
         const loadingPanel = (
-            <div class="k-loading-mask">
-                <span class="k-loading-text">Loading</span>
-                <div class="k-loading-image"></div>
-                <div class="k-loading-color"></div>
+            <div className="k-loading-mask">
+                <span className="k-loading-text">Loading</span>
+                <div className="k-loading-image"></div>
+                <div className="k-loading-color"></div>
             </div>
         );
 
