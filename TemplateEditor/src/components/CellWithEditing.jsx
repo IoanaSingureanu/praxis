@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { GridCell } from '@progress/kendo-react-grid';
-import selectFHIMProfileList from '../selectors/fhimProfileList';
+import selectFHIMStructureList from '../selectors/fhimStructureList';
 
 export default function CellWithEditing(edit, remove) {
     return class extends GridCell {
@@ -26,6 +26,6 @@ export default function CellWithEditing(edit, remove) {
 
 const mapStateToProps = (state) => {
   return {
-    fhimProfileList: selectFHIMProfileList(state.fhimProfileList, state.filters)
+    fhimStructureList: selectFHIMStructureList(state.fhimStructureList, state.filters)
   };
 };

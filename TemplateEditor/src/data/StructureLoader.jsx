@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { toODataString } from '@progress/kendo-data-query';
 import { baseURL } from './properties';
 import { errorMessage } from '../actions/notifications';
-export class StructureDefinitionsLoader extends React.Component {
+export class StructureLoader extends React.Component {
     
    
     init = { method: 'GET', accept: 'application/json;charset=utf-8', headers: {} };
@@ -64,9 +64,7 @@ export class StructureDefinitionsLoader extends React.Component {
                 else
                 {
                     sortDir= "";
-                }
-               
-                                        
+                }                                 
         }
     
 
@@ -164,4 +162,4 @@ const mapDispatchToProps = (dispatch, props) => ({
  
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(StructureDefinitionsLoader);
+export default connect(mapStateToProps, mapDispatchToProps)(StructureLoader);

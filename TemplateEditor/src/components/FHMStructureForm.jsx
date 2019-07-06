@@ -55,7 +55,7 @@ class DropDownCell extends React.Component {
     }
 </style>
 
-export default class FHIMProfileEditorForm extends React.Component {
+export default class FHIMStructureEditorForm extends React.Component {
 
   
     constructor(props) {

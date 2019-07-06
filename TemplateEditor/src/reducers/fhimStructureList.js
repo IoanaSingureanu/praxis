@@ -1,29 +1,29 @@
-// FHIMProfileContainer Reducer
+// FHIMStructureContainer Reducer
 
-const fhimProfileListReducerDefaultState = [];
+const fhimStructureListReducerDefaultState = [];
 
-export default (state = fhimProfileListReducerDefaultState, action) => {
+export default (state = fhimStructureListReducerDefaultState, action) => {
   switch (action.type) {
     case 'ADD_PROFILE_ENTRY':
       return [
         ...state,
-        action.fhimProfile
+        action.fhimStructure
       ];
     case 'REMOVE_PROFILE_ENTRY':
       return state.filter(({ id }) => id !== action.id);
     case 'EDIT_PROFILE_ENTRY':
-      return state.map((fhimProfile) => {
-        if (fhimProfile.id === action.id) {
+      return state.map((fhimStructure) => {
+        if (fhimStructure.id === action.id) {
           return {
-            ...fhimProfile,
+            ...fhimStructure,
             ...action.updates
           };
         } else {
-          return fhimProfile;
+          return fhimStructure;
         };
       });
     case 'SET_PROFILE_ENTRIES':
-      return action.fhimProfileList;
+      return action.fhimStructureList;
     default:
       return state;
   }

@@ -10,14 +10,20 @@ import { Input } from '@progress/kendo-react-inputs';
 
 
 import { TableNameHeader, ColumnNameHeader, Renderers } from './renderers.jsx';
-import { updateProfile, insertProfile, saveProfileToFile } from '../data/SaveProfile.jsx';
+import { updateTemplate, insertTemplate, saveStructureToFile } from '../data/StructureSaver.jsx';
 import { warnNotification } from '../actions/notifications';
 
 let availableElements = [];
 const pageSize = 6;
 
+/*
+    ClassName.MyOrg.MyImplementationGuide.MyTemplate.ProfileVersion
 
-export class FHIMProfileEditorForm extends React.Component {
+*/
+
+const classNameIx = 0, orgIx = 1, implementationGuideIx = 2, templateTitleIx = 3, templateVersionIx = 4;
+
+export class FHIMStructureEditorForm extends React.Component {
 
     constructor(props) {
         super(props);
@@ -26,7 +32,7 @@ export class FHIMProfileEditorForm extends React.Component {
             data: [],
             editItem: undefined,
             changes: false,
-            profileInEdit: this.props.dataItem || null,
+            resourceInEdit: this.props.dataItem || null,
             show: true,
             organizationName: '',
             implementationGuide: '',
@@ -51,15 +57,15 @@ export class FHIMProfileEditorForm extends React.Component {
 
 
     render() {
-        const profile = [this.state.profileInEdit];
+        const structureEntry = [this.state.resourceInEdit];
         let structureName = "Structure";
-        if (this.isObjectClassType(profile[0])) {
+        if (this.isObjectClassType(structureEntry[0])) {
             structureName = "Class";
         }
-        else if (this.isObjectTemplateType(profile[0])) {
+        else if (this.isObjectTemplateType(structureEntry[0])) {
             structureName = "Template";
         }
-        const tableHeader = structureName + ": " + profile[0].resource.name;
+        const tableHeader = structureName + ": " + structureEntry[0].resource.name;
 
         return (
 
@@ -74,13 +80,13 @@ export class FHIMProfileEditorForm extends React.Component {
                         vertical: "center"
                     }}
                     popupClass={'popup-content'} >
-                    {this.initWidget(profile)}
-                   
-                   
+                    {this.initWidget(structureEntry)}
+
+
                     <div className="k-form" align="center">
-                         
+
                         <Grid
-                            style={{backgroundColor:"rgb(227, 231, 237)", width: '950px'}}
+                            style={{ backgroundColor: "rgb(227, 231, 237)", width: '950px' }}
                             rowHeight={pageSize}
                             data={availableElements.slice(this.state.skip, this.state.skip + pageSize)}
                             pageSize={pageSize}
@@ -88,58 +94,96 @@ export class FHIMProfileEditorForm extends React.Component {
                             skip={this.state.skip}
                             pageable={true}
                             onPageChange={this.pageChange}
-                            resizable={true}
+                            resizable={true} s
                             onItemChange={this.itemChange}
                             editField="inEdit" >
-                            <Column headerCell={TableNameHeader} title={tableHeader}>
+
                             <Column headerCell={ColumnNameHeader} title="Data Element" field="id" editable={false} />
                             <Column headerCell={ColumnNameHeader} title="Type" field="type" editable={true} cell={TypeCell} />
                             <Column headerCell={ColumnNameHeader} title="Usage" field="extensions" editable={true} cell={UsageDownCell} />
-                            </Column>
+
+                            <GridToolbar>
+
+                                <div align="left"
+                                    style={{ color: "black", fontWeight: "bold", fontSize: "14px" }}>
+                                    {tableHeader}
+                                </div>
+                            </GridToolbar>
+
                         </Grid>
                         <br />
                         <div align="left">
-                            {this.genProfieInputs(profile[0])}
+                            {this.structureDefinitionInputs(structureEntry[0])}
+                        </div>
+                        <div align="right">
+                            {this.structureDefinitionActions()}
                         </div>
 
-                        <div align="center">
-                            {this.listButtons()}
-                        </div>
                     </div>
-                   
+
                 </Popup>
             </div>
         );
     }
 
+    generateFHIRProfile = (e) => {
+        e.preventDefault();
+        const structureEntry = this.state.resourceInEdit
+        // console.log("Executing Generate structureEntry");
+        saveStructureToFile(structureEntry);
+    }
 
+    updateTemplate = (e) => {
 
-    initWidget = (profile) => {
+        e.preventDefault();
+        const errorMessage =
+            "A new template requires an implementation guide,  a responsible organization, a template name, and a template version.";
+        let structureEntry = this.state.resourceInEdit;
+        let res = structureEntry.resource;
 
-        availableElements = [];
-        if (profile[0] && profile[0].resource.snapshot && profile[0].resource.snapshot) {
-            this.state.data = profile[0].resource.snapshot.element;
-            const extension = this.state.data[0].extension;
-            const len = this.state.data.length;
-
-            if (extension && extension[0] && extension[0].valueString !== '') {
-
-                availableElements = this.state.data.slice();
-            }
-            else {
-                availableElements = this.state.data.slice(1, len);
-            }
-            console.log("INIT Widget Element Length: " + availableElements.length +
-                "  From " + this.state.data.length + " Scroll Window Size: " + pageSize
-                + " Skip: " + this.state.skip);
+        if (!this.validateSaveStructure(true)) {
+            return;
         }
-        else {
-           
-            warnNotification("Missing Data Elements From the Structure: ");
+
+        structureEntry.resource.name = this.buildTemplateName(res);
+
+        if (this.isObjectClassType(structureEntry)) {
+            // Create template first          
+            structureEntry = this.createTemplate(structureEntry);
         }
+        else if (this.isObjectTemplateType(structureEntry)) {
+            // Update
+            // console.log("Update Tempate  Name: " + structureEntry.resource.name);
+            updateTemplate(structureEntry);
+        }
+
+        this.props.save();
     };
 
-    genProfieInputs = (profile) => (
+
+    createTemplate = (structureEntry) => {
+
+        console.log("Before: " + structureEntry.resource.type);
+        let clone = cloneStructure(structureEntry);
+        let res = clone.resource;
+        clone.resource.id = '';
+        clone.resource.type = clone.resource.type.replace('class', 'template');
+        clone.resource.version = this.state.templateVersion;
+        clone.resource.name =   this.buildTemplateName(res);
+        console.log("New Tempate  Name: " + clone.resource.name);
+
+        structureEntry = insertTemplate(clone);
+
+
+        this.setState({
+            searchOn: true
+        });
+        return clone;
+
+    };
+
+
+    structureDefinitionInputs = (structureEntry) => (
 
         <div>
 
@@ -147,7 +191,7 @@ export class FHIMProfileEditorForm extends React.Component {
                 className="input-field"
                 label="Organization Name"
                 minLength={1}
-                defaultValue={profile.resource.publisher}
+                defaultValue={structureEntry.resource.publisher}
                 required={true}
                 name="organizationName"
                 disabled={!this.enableInputRestrictFields()}
@@ -158,7 +202,7 @@ export class FHIMProfileEditorForm extends React.Component {
                 className="input-field"
                 label="Implementation Guide"
                 minLength={1}
-                defaultValue={profile.resource.implicitRules}
+                defaultValue={structureEntry.resource.implicitRules}
                 required={true}
                 name="implementationGuide"
                 disabled={!this.enableInputRestrictFields()}
@@ -170,7 +214,7 @@ export class FHIMProfileEditorForm extends React.Component {
                 style={{ width: "55%" }}
                 label="Profile Name"
                 minLength={1}
-                defaultValue={this.getTemplateTitle(profile.resource.name)}
+                defaultValue={this.getTemplateTitle(structureEntry)}
                 required={true}
                 name="templateTitle"
                 disabled={!this.enableInputRestrictFields()}
@@ -181,7 +225,7 @@ export class FHIMProfileEditorForm extends React.Component {
                 className="input-field"
                 label="Profile Version"
                 minLength={1}
-                defaultValue={this.getVersion(profile.resource.name)}
+                defaultValue={this.getTemplateVersion(structureEntry)}
                 required={true}
                 name="templateVersion"
                 disabled={!this.enableInputFields()}
@@ -191,34 +235,111 @@ export class FHIMProfileEditorForm extends React.Component {
 
     );
 
-    listButtons = () => (
+    structureDefinitionActions = () => (
         <div>
 
-            <Button name="updateProfieButton"
-                disabled={!this.enableSaveProfile()}
-                onClick={this.updateProfile} className="k-button k-primary mt-1 mb-1">Save</Button>
+            <Button name="updateStructureDefinitionButton"
+                disabled={!this.enableSaveStructure()}
+                onClick={this.updateTemplate} className="k-button k-primary mt-1 mb-1">Save</Button>
             &nbsp;&nbsp;
-           <Button name="genProfileButton"
-                onClick={this.generateProfile}
+           <Button name="genStructureButton"
+                onClick={this.generateFHIRProfile}
                 className="k-button k-primary mt-1 mb-1">Generate FHIR Profile</Button>
             &nbsp;&nbsp;
             <Button name="cancelButton" onClick={this.props.cancel} className="k-button k-primary mt-1 mb-1">Cancel</Button>
 
         </div>
     );
-
-    generateProfile = (e) => {
-        e.preventDefault();
-        const profile = this.state.profileInEdit
-        console.log("Executing Generate profile");
-        saveProfileToFile(profile);
+    
+    getTemplateTitle = (entry) =>
+    {
+        if(entry.resource.title)
+        {
+            return entry.resource.title;
+        }
+        console.log("Structure: "+entry.resource.name+ " Title is missing.")
+        return "";
     }
 
-    isObjectTemplateType = (profile) => {
+    getTemplateVersion = (entry) =>
+    {
+        if(entry.resource.version)
+        {
+            return entry.resource.version;
+        }
+        console.log("Structure: "+entry.resource.name+ " Version is missing.")
+        return "";
+    }
+
+
+   
+    buildTemplateName = (res) => {
+        let className = this.getElementName(res.name, classNameIx);
+
+        const newName =
+            className +
+            "." + res.publisher +
+            "." + res.implicitRules +
+            "." + res.title +
+            "." + res.version;
+
+        console.log("Build TEMPLATE NAME ("+newName+"): " +
+            "  className-> " + className +
+            "  res.publisher-> " + res.publisher +
+            "  res.implicitRules-> " + res.implicitRules +
+            "  res.title-> " + res.title +
+            "  res.version-> " + res.version)
+
+        return newName;
+
+    }
+
+
+    getElementName = (name, ix) => {
+        const res = name.split('.');
+        let element = '';
+
+        if (res.length > ix) {
+            element = res[ix];
+        }
+      //  console.log("Get Element: " + name + " ix: " + ix + " Result: " + element);
+        return element;
+    }
+
+
+
+    initWidget = (structureEntry) => {
+
+        availableElements = [];
+        if (structureEntry[0] && structureEntry[0].resource.snapshot && structureEntry[0].resource.snapshot) {
+            this.state.data = structureEntry[0].resource.snapshot.element;
+            const extension = this.state.data[0].extension;
+            const len = this.state.data.length;
+
+            if (extension && extension[0] && extension[0].valueString !== '') {
+
+                availableElements = this.state.data.slice();
+            }
+            else {
+                availableElements = this.state.data.slice(1, len);
+            }
+            /* 
+             console.log("INIT Widget Element Length: " + availableElements.length +
+            "  From " + this.state.data.length + " Scroll Window Size: " + pageSize
+                + " Skip: " + this.state.skip);
+            */
+        }
+        else {
+
+            warnNotification("Missing Data Elements From the Structure: ");
+        }
+    };
+
+    isObjectTemplateType = (structureEntry) => {
         // resource type
-        let resourceType = profile.resource.type;
+        let resourceType = structureEntry.resource.type;
         if (!resourceType) {
-            console.log("Warning, Resource Name is not defined");
+            // console.log("Warning, Structure Name is not defined");
             return false;
         }
         if (resourceType.endsWith('template')) {
@@ -227,11 +348,11 @@ export class FHIMProfileEditorForm extends React.Component {
         return false;
     }
 
-    isObjectClassType = (profile) => {
+    isObjectClassType = (structureEntry) => {
         // resource type
-        let resourceType = profile.resource.type;
+        let resourceType = structureEntry.resource.type;
         if (!resourceType) {
-            console.log("Warning, Resource Name is not defined");
+            // console.log("Warning, Structure Name is not defined");
             return false;
         }
         if (resourceType.endsWith('class')) {
@@ -240,19 +361,19 @@ export class FHIMProfileEditorForm extends React.Component {
         return false;
     }
 
-    enableGenerateProfile = () => {
+    enableGenerateStructure = () => {
 
         if (this.enableInputFields()) {
-            if (this.isObjectTemplateType(this.state.profileInEdit))
+            if (this.isObjectTemplateType(this.state.resourceInEdit))
                 return true;
         }
         return false;
     }
 
-    enableSaveProfile = () => {
+    enableSaveStructure = () => {
 
         if (this.enableInputFields()) {
-            return this.validateSaveProfile(false);
+            return this.validateSaveStructure(false);
         }
         return false;
     }
@@ -260,49 +381,41 @@ export class FHIMProfileEditorForm extends React.Component {
 
     enableInputFields = () => {
 
-        if (this.isObjectTemplateType(this.state.profileInEdit) ||
-            this.isObjectClassType(this.state.profileInEdit)) {
+        if (this.isObjectTemplateType(this.state.resourceInEdit) ||
+            this.isObjectClassType(this.state.resourceInEdit)) {
             return true;
         }
         return false;
     }
-    
+
     enableInputRestrictFields = () => {
 
         return this.enableInputFields();
     }
 
-    getVersion = (name) => {
-        const res = name.split('.');
 
-        if (res.length > 2) {
-            return res[res.length - 1];
-        }
 
-        return '0';
-    }
+    validateSaveStructure = (showError) => {
 
-    validateSaveProfile = (showError) => {
-
-        const profile = this.state.profileInEdit;
+        const structureEntry = this.state.resourceInEdit;
 
         let errList = '';
         let beginMessage = "Field: "
         let endMessage = " is required. "
 
 
-        if (profile.resource.publisher === '') {
+        if (structureEntry.resource.publisher === '') {
             errList += "'Organization Name'";
         }
-        if (profile.resource.implicitRules === '') {
+        if (structureEntry.resource.implicitRules === '') {
             if (errList !== '') {
-                beginMessage = "Fieeds: "
+                beginMessage = "Fields: "
                 endMessage = " are required."
                 errList += ", ";
             }
             errList += "'Implementation Guide'";
         }
-        if (profile.resource.name.trim() === '') {
+        if (structureEntry.resource.type === '') {
             if (errList !== '') {
                 beginMessage = "Fields: "
                 endMessage = " are required."
@@ -310,8 +423,8 @@ export class FHIMProfileEditorForm extends React.Component {
             }
             errList += "'Template Name'";
         }
-        if (this.state.templateVersion === '' &&
-            this.getVersion(profile.resource.name) === '') {
+
+        if (structureEntry.resource.version === '') {
             if (errList !== '') {
                 beginMessage = "Fields: "
                 endMessage = " are required."
@@ -337,82 +450,6 @@ export class FHIMProfileEditorForm extends React.Component {
 
     };
 
-    buildTemplateName = (res, title, version) => {
-        const newName = res.publisher +
-            "." + res.implicitRules +
-            "." + title +
-            "." + version;
-
-        console.log("TEMPLATE NAME: " + newName);
-        return newName;
-
-    }
-
-    getTemplateTitle = (name) => {
-
-        const res = name.split('.');
-        let title = 'title';
-
-        if (res.length > 0) {
-            title = res[0];
-        }
-        console.log("Get Template: Name: Old Name: " + title);
-        return title;
-    }
-
-    updateProfile = (e) => {
-
-        e.preventDefault();
-        const errorMessage =
-            "A new template requires an implementation guide,  a responsible organization, a template name, and a template version.";
-        let profile = this.state.profileInEdit;
-        let res = profile.resource;
-
-        if (!this.validateSaveProfile(true)) {
-            return;
-        }
-
-        profile.resource.name =
-            this.buildTemplateName(res, this.state.templateTitle, this.state.templateVersion);
-
-        if (this.isObjectClassType(profile)) {
-            // Create template first          
-            profile = this.createTemplate(profile);
-        }
-        else if (this.isObjectTemplateType(profile)) {
-            // Update
-            console.log("Update Tempate  Name: " + profile.resource.name);
-            updateProfile(profile);
-        }
-
-        this.props.save();
-    };
-
-
-    createTemplate = (profile) => {
-
-        console.log("Before: " + profile.resource.type);
-        let clone = cloneProfile(profile);
-        let res = clone.resource;
-        clone.resource.id='';
-        clone.resource.type = clone.resource.type.replace('class', 'template');
-        clone.resource.version = this.state.templateVersion;
-        clone.resource.name =
-            this.buildTemplateName(res,
-                this.state.templateTitle,
-                this.state.templateVersion);
-        console.log("New Tempate  Name: " + clone.resource.name);
-
-        profile = insertProfile(clone);
-
-
-        this.setState({
-            searchOn: true
-        });
-        return clone;
-
-    };
-
 
     onChange(e) {
         this.setState({ value: e.target.value });
@@ -423,8 +460,8 @@ export class FHIMProfileEditorForm extends React.Component {
         const organizationName = e.target.value;
         this.setState({ organizationName: organizationName });
 
-        let profile = this.state.profileInEdit;
-        profile.resource.publisher = organizationName;
+        let structureEntry = this.state.resourceInEdit;
+        structureEntry.resource.publisher = organizationName;
 
     };
 
@@ -432,8 +469,8 @@ export class FHIMProfileEditorForm extends React.Component {
 
         const implementationGuide = e.target.value;
         this.setState({ implementationGuide: implementationGuide });
-        let profile = this.state.profileInEdit;
-        profile.resource.implicitRules = implementationGuide;
+        let structureEntry = this.state.resourceInEdit;
+        structureEntry.resource.implicitRules = implementationGuide;
 
     };
 
@@ -441,22 +478,24 @@ export class FHIMProfileEditorForm extends React.Component {
 
         const templateTitle = e.target.value;
         this.setState({ templateTitle: templateTitle });
-        let profile = this.state.profileInEdit;
-        profile.resource.name = templateTitle;
+        let structureEntry = this.state.resourceInEdit;
+        structureEntry.resource.title = templateTitle;
 
     };
 
     onTemplateVersionChange = (e) => {
         const templateVersion = e.target.value;
         this.setState({ templateVersion: templateVersion });
+        let structureEntry = this.state.resourceInEdit;
+        structureEntry.resource.version = templateVersion;
     };
 
 
     rowRender = (trElement, props) => {
 
         const dataItem = props.dataItem;
-        const profiles = this.state.data.slice();
-        const index = profiles.findIndex(p => p.id === dataItem.id);
+        const resources = this.state.data.slice();
+        const index = resources.findIndex(p => p.id === dataItem.id);
         const evenRow = { backgroundColor: "rgb(237, 242, 247)" };
         const oddRow = { backgroundColor: "rgb(rgb(252, 253, 255))" };
         const trProps = { style: index % 2 ? evenRow : oddRow };
@@ -500,7 +539,7 @@ export class FHIMProfileEditorForm extends React.Component {
     }
 
     pageChange(event) {
-        console.log("Page Change Event: Skip: " + event.page.skip);
+        // console.log("Page Change Event: Skip: " + event.page.skip);
 
         this.setState({
             skip: event.page.skip
@@ -508,7 +547,7 @@ export class FHIMProfileEditorForm extends React.Component {
     }
 
     itemChange(event) {
-        console.log("Item Change Event");
+        // console.log("Item Change Event");
         event.dataItem[event.field] = event.value;
         this.setState({
             changes: true
@@ -546,7 +585,7 @@ class TypeCell extends React.Component {
             console.log("TYPE NOT DEFINED");
         }
 
-        console.log("Type Code: " + typeValue + " ");
+        // console.log("Type Code: " + typeValue + " ");
 
 
     }
@@ -568,17 +607,18 @@ class UsageDownCell extends React.Component {
 
         if (extension && extension[0] && extension[0].valueString) {
 
-            /* console.log("Handle Usage Cell"); console.log("--->Handle Change: ''" +
+            /*   console.log("Handle Usage Cell"); // console.log("--->Handle Change: ''" +
                  this.props.field + "'" + " ''" +
                  extension[0].valueString + "'  New Vaue: ''" + e.target.value.value + "'");
-                 */
+             */
 
             extension[0].valueString = e.target.value.value;
         }
         else {
-            console.log("Handle Usage Cell"); console.log("--->Handle Change: ''" +
-
-                this.props.field + " " + this.props.dataItem);
+            /*
+            console.log("Handle Usage Cell"); // console.log("--->Handle Change: ''" +
+            this.props.field + " " + this.props.dataItem);
+            */
         }
 
         this.props.onChange({
@@ -621,8 +661,8 @@ class UsageDownCell extends React.Component {
 }
 
 
-function cloneProfile(profile) {
-    return Object.assign({}, profile);
+function cloneStructure(structureEntry) {
+    return Object.assign({}, structureEntry);
 }
 
 const mapStateToProps = (state, props) => ({
@@ -630,9 +670,9 @@ const mapStateToProps = (state, props) => ({
 });
 
 const mapDispatchToProps = (dispatch, props) => ({
-    updateProfile: (profile) => dispatch(updateProfile(profile)),
-    insertProfile: (profile) => dispatch(insertProfile(profile))
+    updateTemplate: (structureEntry) => dispatch(updateTemplate(structureEntry)),
+    insertTemplate: (structureEntry) => dispatch(insertTemplate(structureEntry))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(FHIMProfileEditorForm);
+export default connect(mapStateToProps, mapDispatchToProps)(FHIMStructureEditorForm);
 

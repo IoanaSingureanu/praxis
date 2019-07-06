@@ -19,7 +19,7 @@ export default (state = filtersReducerDefaultState, action) => {
     case 'SORT_BY_DATA_USAGE':
       return {
         ...state,
-        sortBy: 'profileUsage'
+        sortBy: 'resourceUsage'
       };
     case 'SORT_BY_DATE':
       return {

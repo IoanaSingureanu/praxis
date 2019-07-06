@@ -5,25 +5,25 @@ import { GridColumn as Column, Grid} from '@progress/kendo-react-grid';
 import { Button } from '@progress/kendo-react-buttons';
 import uuid from 'uuid';
 
-import { StructureDefinitionsLoader} from '../data/StructureDefinitionsLoader.jsx';
-import { FHIMProfileEditorForm }      from './FHIMProfileEditorForm.jsx';
+import { StructureLoader} from '../data/StructureLoader.jsx';
+import { FHIMStructureEditorForm }      from './FHIMStructureEditorForm.jsx';
 import { ColumnNameHeader} from './renderers.jsx';
 
 
 
-export class FHIMStructureDefinitionPage extends React.Component {
+export class FHIMStructurePage extends React.Component {
 
     offset = { left: 500, top: 50 };
     constructor(props) {
         super(props);
         this.state = {
-            structureDefinitions: { data: [], total: 0, transactionId:''},
+            resources: { data: [], total: 0, transactionId:''},
             dataState: { take: 10, skip: 0 },
             queryDefinition: {searchBy: '', transactionId:''},
             calendarFocused: null,
             searchOn: false,
-            profileInEdit: undefined,
-            profiles: undefined,
+            structureEntryInEdit: undefined,
+            structureEntrys: undefined,
             rowCount:0,
             show: 1,
             infoMsg: 'INFO Message',
@@ -82,13 +82,13 @@ export class FHIMStructureDefinitionPage extends React.Component {
                     pageable={true}
                     resizable={true}
                     {...this.state.dataState}
-                    {...this.state.structureDefinitions}
+                    {...this.state.resources}
                     onDataStateChange={this.dataStateChange}
                  
                     style={{backgroundColor:"rgb(227, 231, 237)"}}
                                     
                     onRowClick={(e) => {
-                        this.setState({ profileInEdit: this.cloneProfile(e.dataItem) })
+                        this.setState({ structureEntryInEdit: this.cloneStructure(e.dataItem) })
                     }} 
                     sortable
                     sort={this.state.sort}
@@ -138,7 +138,7 @@ export class FHIMStructureDefinitionPage extends React.Component {
                 {
                   (this.state.searchOn) ? (
                     
-                       <StructureDefinitionsLoader
+                       <StructureLoader
                           dataState={this.state.dataState}
                           onDataRecieved={this.dataRecieved} 
                           queryDefinition={this.state.queryDefinition}  
@@ -149,8 +149,8 @@ export class FHIMStructureDefinitionPage extends React.Component {
 
                 <br /><br />
               
-                {this.state.profileInEdit &&
-                    <FHIMProfileEditorForm dataItem={this.state.profileInEdit} save={this.save} cancel={this.cancel} />}
+                {this.state.structureEntryInEdit &&
+                    <FHIMStructureEditorForm dataItem={this.state.structureEntryInEdit} save={this.save} cancel={this.cancel} />}
                    
         </div>
     );
@@ -166,11 +166,11 @@ export class FHIMStructureDefinitionPage extends React.Component {
 
     }
 
-    dataRecieved = (structureDefinitions) => {
+    dataRecieved = (resources) => {
         this.setState({
             ...this.state,
-            structureDefinitions: structureDefinitions,
-            queryDefinition: {transactionId:structureDefinitions.transactionId}
+            resources: resources,
+            queryDefinition: {transactionId:resources.transactionId}
         });
 
     }
@@ -211,7 +211,7 @@ export class FHIMStructureDefinitionPage extends React.Component {
         e.preventDefault();
         
         this.setState({ searchOn: true });
-       // this.setState({ structureDefinitions: { data: [], total: 0 } });
+       // this.setState({ resources: { data: [], total: 0 } });
 
     };
 
@@ -229,79 +229,79 @@ export class FHIMStructureDefinitionPage extends React.Component {
 
 
     edit = (dataItem) => {
-        this.setState({ profileInEdit: this.cloneProfile(dataItem) });
+        this.setState({ structureEntryInEdit: this.cloneStructure(dataItem) });
     }
 
     remove = (dataItem) => {
 
 
-        const profiles = this.state.structureDefinitions.data.slice();
+        const structureEntrys = this.state.resources.data.slice();
 
-        const index = profiles.findIndex(p => p.resource.id === dataItem.resource.id);
+        const index = structureEntrys.findIndex(p => p.resource.id === dataItem.resource.id);
 
         if (index < 0) {
-            console.log("Remove Profile: " + dataItem.resource.id + " Not Found");
+            console.log("Remove Structure: " + dataItem.resource.id + " Not Found");
             return;
         }
         // Udate server
-        console.log("Removing profile record: " + dataItem.resource.id);
+        console.log("Removing Structure Definition entry record: " + dataItem.resource.id);
 
-        profiles.splice(index, 1);
+        structureEntrys.splice(index, 1);
 
         this.setState({
-            profiles: profiles,
-            profileInEdit: undefined
+            structureEntrys: structureEntrys,
+            structureEntryInEdit: undefined
         });
         
     }
 
      save = () => {
 
-        const profiles = this.state.structureDefinitions.data;
+        const structureEntrys = this.state.resources.data;
 
       
         this.setState({
-            profiles: profiles,
-            dataItem: this.state.profileInEdit,
-            profileInEdit: undefined,
+            structureEntrys: structureEntrys,
+            dataItem: this.state.structureEntryInEdit,
+            structureEntryInEdit: undefined,
             dataFeatchError:false
         });
     }
 
     cancel = () => {
-        this.setState({ profileInEdit: undefined });
+        this.setState({ structureEntryInEdit: undefined });
     }
 
     insert = () => {
-        this.setState({ profileInEdit: {} });
+        this.setState({ structureEntryInEdit: {} });
     }
 
 
-    cloneProfile(profileRecord) {
+    cloneStructure(structureEntryRecord) {
 
-        const profiles = this.state.structureDefinitions.data;
-        let profileRef =
-            profiles.find(p => p.resource.id === profileRecord.resource.id);
+        const structureEntrys = this.state.resources.data;
+        let structureEntryRef =
+            structureEntrys.find(p => p.resource.id === structureEntryRecord.resource.id);
 
 
-        if (!profileRef) {
-            console.log("PROFILE: " + profileRef + " Not Found.");
+        if (!structureEntryRef) {
+            console.log("PROFILE: " + structureEntryRef + " Not Found.");
 
         }
-        return Object.assign({}, profileRecord);
+        return Object.assign({}, structureEntryRecord);
     }
 
-    newProfie(source) {
+    newTemplate(source) {
 
         const id = uuid.v4();
-        const profile = {
+        const structureEntry = {
             resource: { id: id, name: '', url: '' }
         };
 
 
-        console.log("NEW Profile: " + profile);
+        console.log("NEW Structure: " + structureEntry);
 
-        return Object.assign(profile, source);
+        return Object.assign(structureEntry, source);
     }
        
 }
@@ -309,7 +309,7 @@ export class FHIMStructureDefinitionPage extends React.Component {
 class StructureNameCell extends React.Component {
     
     render() {
-        let msg = "Click on the Row in order to load profile.";
+        let msg = "Click on the Row in order to load Structure Definition Entry.";
         return (
             <td  
                 
@@ -324,7 +324,7 @@ class StructureNameCell extends React.Component {
 class StructureTypeCell extends React.Component {
     
     render() {
-        let msg = "Click on the Row in order to load profile.";
+        let msg = "Click on the Row in order to load Structure Definition entry.";
         return (
             <td 
                 style={{color:"rgb(4, 66, 165)"}}
@@ -343,5 +343,5 @@ const mapDispatchToProps = (dispatch, props) => ({
    
   });
   
- export default connect(mapStateToProps, mapDispatchToProps)(FHIMStructureDefinitionPage);
+ export default connect(mapStateToProps, mapDispatchToProps)(FHIMStructurePage);
   
