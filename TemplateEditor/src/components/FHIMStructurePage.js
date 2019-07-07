@@ -214,6 +214,7 @@ export class FHIMStructurePage extends React.Component {
         
         this.setState({searchOn: true});
         this.setState({queryDefinition: {newSearch:true}});
+        this.setState({dataState: { take: 10, skip: 0 }});
 
     };
 
