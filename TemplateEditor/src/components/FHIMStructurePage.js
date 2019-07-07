@@ -266,6 +266,7 @@ export class FHIMStructurePage extends React.Component {
             structureEntryInEdit: undefined,
             dataFeatchError:false
         });
+        this.setState({queryDefinition: {newSearch:true}});
     }
 
     cancel = () => {
