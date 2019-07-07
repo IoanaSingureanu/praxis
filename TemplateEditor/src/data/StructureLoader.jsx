@@ -13,7 +13,7 @@ export class StructureLoader extends React.Component {
     filter = '';
     searchBy = '';
     sortColumn='name';
-    sortDir=''
+    sortDir='';
 
     initData = (searchBy, sortColumn, sortDir) =>
     {
@@ -47,6 +47,7 @@ export class StructureLoader extends React.Component {
         let searchBy = this.props.queryDefinition.searchBy;
         let sortColumn = this.props.sortColumn;
         let sortDir = this.props.sortDir;
+        let newSearch =this.props.queryDefinition.newSearch;
         
 
          const s = this.props.sort[0].field;
@@ -77,7 +78,7 @@ export class StructureLoader extends React.Component {
         let url = this.buildQuery(searchBy, sortColumn, sortDir);
         
         
-        if( (searchBy !== '' && searchBy !== this.searchBy) || 
+        if( newSearch || (searchBy !== '' && searchBy !== this.searchBy) || 
             (sortColumn !== this.sortColumn) ||
             ( sortDir !== this.sortDir))
         {
@@ -87,10 +88,7 @@ export class StructureLoader extends React.Component {
         }
         else if (this.pending || toODataString(this.props.dataState) === this.lastSuccess) {
             
-              /*   console.log("No Query: " +
-                  this.pending + " Last Success: "+this.lastSuccess + " TransactionId: "
-                 + transactionId + " Serach By: "+searchBy);
-              */
+             
                  return;
         }
         else {

@@ -19,7 +19,7 @@ export class FHIMStructurePage extends React.Component {
         this.state = {
             resources: { data: [], total: 0, transactionId:''},
             dataState: { take: 10, skip: 0 },
-            queryDefinition: {searchBy: '', transactionId:''},
+            queryDefinition: {searchBy: '', transactionId:'', newSearch: false},
             calendarFocused: null,
             searchOn: false,
             structureEntryInEdit: undefined,
@@ -144,7 +144,9 @@ export class FHIMStructurePage extends React.Component {
                           queryDefinition={this.state.queryDefinition}  
                           sort={this.state.sort}                       
                         />)  : (<p></p>)
+                       
                 }
+                {this.clearSearchState()}
                 </div>
 
                 <br /><br />
@@ -210,16 +212,14 @@ export class FHIMStructurePage extends React.Component {
     onSearchClick = (e) => {
         e.preventDefault();
         
-        this.setState({ searchOn: true });
-       // this.setState({ resources: { data: [], total: 0 } });
+        this.setState({searchOn: true});
+        this.setState({queryDefinition: {newSearch:true}});
 
     };
 
-    clearState = () => {
+    clearSearchState = () => {
 
-        if(this.state.searchOn === false)
-          return;
-        this.state.searchOn = false;
+        this.setState.newSearch = false;
     };
 
     clearStatusMsg = () => {
