@@ -243,6 +243,7 @@ export class FHIMStructureEditorForm extends React.Component {
                 onClick={this.updateTemplate} className="k-button k-primary mt-1 mb-1">Save</Button>
             &nbsp;&nbsp;
            <Button name="genStructureButton"
+                disabled={!this.enableGenerateStructure()}
                 onClick={this.generateFHIRProfile}
                 className="k-button k-primary mt-1 mb-1">Generate FHIR Profile</Button>
             &nbsp;&nbsp;
@@ -363,8 +364,8 @@ export class FHIMStructureEditorForm extends React.Component {
 
     enableGenerateStructure = () => {
 
-        if (this.enableInputFields()) {
-            if (this.isObjectTemplateType(this.state.resourceInEdit))
+        if (this.isObjectTemplateType(this.state.resourceInEdit)&&this.enableSaveStructure())
+        {
                 return true;
         }
         return false;

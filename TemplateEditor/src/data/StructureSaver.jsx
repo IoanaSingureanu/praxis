@@ -20,7 +20,7 @@ export const updateTemplate = (dataItem) => {
         body: jsonObj
     })
         .then((response) => {
-            console.log("Update Operation Successed.");
+            console.log("Update Operation Successful.");
         })
         .catch((error) => {
             errorMessage("Failed to Update Structure: " + error + ", URL: " + endpoint);
@@ -43,7 +43,7 @@ export const insertTemplate = (dataItem) => {
         body: jsonObj
     })
         .then((response) => {
-            console.log("Create Operation Successed.");
+            console.log("Create Operation Successful.");
         })
         .catch((error) => {
             errorMessage("Failed to Generate Structure: " + error + ", URL: " + endpoint);
