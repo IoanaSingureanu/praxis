@@ -10,7 +10,7 @@ import { Input } from '@progress/kendo-react-inputs';
 
 
 import { TableNameHeader, ColumnNameHeader, Renderers } from './renderers.jsx';
-import { updateTemplate, insertTemplate, saveStructureToFile } from '../data/StructureSaver.jsx';
+import { updateTemplate, insertTemplate, generateProfile } from '../data/StructureSaver.jsx';
 import { warnNotification } from '../actions/notifications';
 
 let availableElements = [];
@@ -130,7 +130,7 @@ export class FHIMStructureEditorForm extends React.Component {
         e.preventDefault();
         const structureEntry = this.state.resourceInEdit
         // console.log("Executing Generate structureEntry");
-        saveStructureToFile(structureEntry);
+        generateProfile(structureEntry);
     }
 
     updateTemplate = (e) => {

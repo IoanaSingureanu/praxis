@@ -1,8 +1,6 @@
 import { baseURL } from './properties';
 import { infoMessage, errorMessage } from '../actions/notifications';
 
-
-
 export const updateTemplate = (dataItem) => {
     const id = dataItem.resource.id;
     const endpoint = baseURL + id + "?_format=json";
@@ -28,7 +26,6 @@ export const updateTemplate = (dataItem) => {
 }
 
 export const insertTemplate = (dataItem) => {
-    //POST http://hapi.fhir.org/baseR4/Structure?_format=json  
     const endpoint = baseURL + "?_format=json";
     const jsonObj = JSON.stringify(dataItem.resource);
 
@@ -51,15 +48,12 @@ export const insertTemplate = (dataItem) => {
         });
 };
 
-export const saveStructureToFile = (dataItem) => {
-    // http://ocp-apps-elb-811293208.us-east-2.elb.amazonaws.com:8082/fhir/baseDstu3/Structure/2421
+export const generateProfile = (dataItem) => {
     const id = dataItem.resource.id;
-    const endpoint = baseURL + id;
-    const fileDest = "resource-" + id + ".txt";
-
-   // saveAs(endpoint, fileDest);
-    
-    console.log("Save AS " + endpoint + fileDest);
+    const generateFunction='';
+    const endpoint = baseURL + generateFunction +  id;
+        
+    console.log("Save AS " + endpoint);
     let win = window.open(endpoint, '_blank');
     win.focus();
 }
