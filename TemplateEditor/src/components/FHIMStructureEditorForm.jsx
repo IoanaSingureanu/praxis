@@ -312,6 +312,7 @@ export class FHIMStructureEditorForm extends React.Component {
     initWidget = (structureEntry) => {
 
         availableElements = [];
+        this.state.skip = 0;
         if (structureEntry[0] && structureEntry[0].resource.snapshot && structureEntry[0].resource.snapshot) {
             this.state.data = structureEntry[0].resource.snapshot.element;
             const extension = this.state.data[0].extension;

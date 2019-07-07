@@ -69,6 +69,7 @@ export class StructureLoader extends React.Component {
         }
     
 
+       // console.log("Serach BY: PROP: "+searchBy, " THIS "+this.searchBy);
         if(!searchBy)
         {
             // console.log("Data Request If Needed SearchBy not Defined, local: "+this.searchBy);
@@ -76,9 +77,9 @@ export class StructureLoader extends React.Component {
         }
                
         let url = this.buildQuery(searchBy, sortColumn, sortDir);
+      
         
-        
-        if( newSearch || (searchBy !== '' && searchBy !== this.searchBy) || 
+        if( (searchBy !== '' && (searchBy !== this.searchBy || newSearch)) || 
             (sortColumn !== this.sortColumn) ||
             ( sortDir !== this.sortDir))
         {
