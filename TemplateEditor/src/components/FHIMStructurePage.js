@@ -169,10 +169,13 @@ export class FHIMStructurePage extends React.Component {
     }
 
     dataRecieved = (resources) => {
+
+        const searchBy = this.state.queryDefinition.searchBy;             
+      
         this.setState({
             ...this.state,
             resources: resources,
-            queryDefinition: {transactionId:resources.transactionId}
+            queryDefinition: {transactionId:resources.transactionId,newSearch:false, searchBy:searchBy }
         });
 
     }
@@ -212,8 +215,9 @@ export class FHIMStructurePage extends React.Component {
     onSearchClick = (e) => {
         e.preventDefault();
         
+        const searchBy = this.state.queryDefinition.searchBy;       
+        this.setState({queryDefinition: {newSearch:true, searchBy:searchBy}});
         this.setState({searchOn: true});
-        this.setState({queryDefinition: {newSearch:true}});
         this.setState({dataState: { take: 10, skip: 0 }});
 
     };
@@ -267,7 +271,9 @@ export class FHIMStructurePage extends React.Component {
             structureEntryInEdit: undefined,
             dataFeatchError:false
         });
-        this.setState({queryDefinition: {newSearch:true}});
+        const searchBy = this.state.queryDefinition.searchBy;       
+        this.setState({queryDefinition: {newSearch:false, searchBy:searchBy}});
+      
     }
 
     cancel = () => {
