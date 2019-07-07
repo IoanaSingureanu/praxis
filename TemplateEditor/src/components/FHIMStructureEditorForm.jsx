@@ -372,10 +372,7 @@ export class FHIMStructureEditorForm extends React.Component {
 
     enableSaveStructure = () => {
 
-        if (this.enableInputFields()) {
-            return this.validateSaveStructure(false);
-        }
-        return false;
+        return this.validateSaveStructure(false);
     }
 
 
@@ -404,10 +401,10 @@ export class FHIMStructureEditorForm extends React.Component {
         let endMessage = " is required. "
 
 
-        if (structureEntry.resource.publisher === '') {
+        if (!structureEntry.resource.publisher || structureEntry.resource.publisher === '') {
             errList += "'Organization Name'";
         }
-        if (structureEntry.resource.implicitRules === '') {
+        if (!structureEntry.resource.implicitRules || structureEntry.resource.implicitRules === '') {
             if (errList !== '') {
                 beginMessage = "Fields: "
                 endMessage = " are required."
@@ -415,7 +412,7 @@ export class FHIMStructureEditorForm extends React.Component {
             }
             errList += "'Implementation Guide'";
         }
-        if (structureEntry.resource.type === '') {
+        if (!structureEntry.resource.type || structureEntry.resource.type === '') {
             if (errList !== '') {
                 beginMessage = "Fields: "
                 endMessage = " are required."
@@ -424,7 +421,7 @@ export class FHIMStructureEditorForm extends React.Component {
             errList += "'Template Name'";
         }
 
-        if (structureEntry.resource.version === '') {
+        if (!structureEntry.resource.version || structureEntry.resource.version === '') {
             if (errList !== '') {
                 beginMessage = "Fields: "
                 endMessage = " are required."
@@ -433,6 +430,7 @@ export class FHIMStructureEditorForm extends React.Component {
             errList += "'Template Version'";
         }
 
+       
         if (errList !== '') {
             const err = beginMessage + errList + endMessage;
             if (showError) {
