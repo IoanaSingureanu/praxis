@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import { toODataString } from '@progress/kendo-data-query';
-import { baseURL } from './properties';
+import { baseURL, baseURLNext} from './properties';
 import { errorMessage } from '../actions/notifications';
 export class StructureLoader extends React.Component {
     
@@ -33,7 +33,7 @@ export class StructureLoader extends React.Component {
     getChunck = (queryDefinition, dataState, sortColumn, sortDir) =>
     {
         const endpoint =
-          baseURL + '?_getpages='+queryDefinition.transactionId+
+        baseURLNext + '?_getpages='+queryDefinition.transactionId+
                     '&_getpagesoffset=' + dataState.skip+
                     '&_count='+dataState.take+
                     '&_sort='+sortDir+sortColumn+
@@ -48,7 +48,7 @@ export class StructureLoader extends React.Component {
         let sortColumn = this.props.sortColumn;
         let sortDir = this.props.sortDir;
         let newSearch =this.props.queryDefinition.newSearch;
-        
+        let transactionId = this.props.queryDefinition.transactionId;
 
          const s = this.props.sort[0].field;
          let dir = this.props.sort[0].dir;
@@ -69,7 +69,7 @@ export class StructureLoader extends React.Component {
         }
     
 
-       // console.log("Serach BY: PROP: "+searchBy, " THIS "+this.searchBy);
+     
         if(!searchBy)
         {
             // console.log("Data Request If Needed SearchBy not Defined, local: "+this.searchBy);
@@ -85,16 +85,17 @@ export class StructureLoader extends React.Component {
         {
             this.initData(searchBy, sortColumn, sortDir);
            
-            console.log("New Query: "+url);
+            console.log("NEW SEARCH By:  "+searchBy);
+            console.log("NEW SEARCH URL: "+url);
         }
-        else if (this.pending || toODataString(this.props.dataState) === this.lastSuccess) {
-            
-             
+        else if (this.pending || toODataString(this.props.dataState) === this.lastSuccess) {      
                  return;
         }
         else {
             url = this.getChunck(this.props.queryDefinition, this.props.dataState, sortColumn, sortDir);
-            console.log("Chunck Query: "+url);
+           
+            console.log("Next Page SEARCH By: "+searchBy, " TRANSACTION ID: "+transactionId);
+            console.log("Next Page URL: "+url);
         }
         
         this.pending = toODataString(this.props.dataState);

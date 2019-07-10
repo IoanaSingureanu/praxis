@@ -170,12 +170,12 @@ export class FHIMStructurePage extends React.Component {
 
     dataRecieved = (resources) => {
 
-        const searchBy = this.state.queryDefinition.searchBy;             
-      
+        const searchBy = this.state.queryDefinition.searchBy;         
+       
         this.setState({
             ...this.state,
             resources: resources,
-            queryDefinition: {transactionId:resources.transactionId,newSearch:false, searchBy:searchBy }
+            queryDefinition: {searchBy:searchBy, transactionId:resources.transactionId,newSearch:false }
         });
 
     }
@@ -206,20 +206,26 @@ export class FHIMStructurePage extends React.Component {
     onSearchChanged = (e) => {
 
         const searchBy = e.target.value;
+        const transactionId = this.state.queryDefinition.transactionId;
 
-        this.setState({ queryDefinition: {searchBy:searchBy} });
-         
-       
+      //  console.log("SET-> SEARCH BY-> "+searchBy);
+
+        this.setState({
+      
+        queryDefinition: {searchBy:searchBy, transactionId:transactionId,newSearch:false }
+        });
+      
     };
 
     onSearchClick = (e) => {
         e.preventDefault();
         
-        const searchBy = this.state.queryDefinition.searchBy;       
-        this.setState({queryDefinition: {newSearch:true, searchBy:searchBy}});
+        const searchBy = this.state.queryDefinition.searchBy;   
+        this.setState({
+           queryDefinition: {searchBy:searchBy, transactionId:'',newSearch:true }
+        });
         this.setState({searchOn: true});
         this.setState({dataState: { take: 10, skip: 0 }});
-
     };
 
     clearSearchState = () => {
@@ -271,8 +277,13 @@ export class FHIMStructurePage extends React.Component {
             structureEntryInEdit: undefined,
             dataFeatchError:false
         });
-        const searchBy = this.state.queryDefinition.searchBy;       
-        this.setState({queryDefinition: {newSearch:false, searchBy:searchBy}});
+        const searchBy = this.state.queryDefinition.searchBy;   
+        const transactionId = this.state.queryDefinition.transactionId;    
+        this.setState({
+           queryDefinition: {searchBy:searchBy, transactionId:transactionId,newSearch:true }
+        });
+
+        
       
     }
 
