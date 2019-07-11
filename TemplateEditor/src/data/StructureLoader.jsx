@@ -79,7 +79,7 @@ export class StructureLoader extends React.Component {
         let url = this.buildQuery(searchBy, sortColumn, sortDir);
       
         
-        if( (searchBy !== '' && (searchBy !== this.searchBy || newSearch)) || 
+        if( ((searchBy !== this.searchBy || newSearch)) || 
             (sortColumn !== this.sortColumn) ||
             ( sortDir !== this.sortDir))
         {

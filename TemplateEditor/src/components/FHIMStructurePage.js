@@ -5,9 +5,10 @@ import { GridColumn as Column, Grid} from '@progress/kendo-react-grid';
 import { Button } from '@progress/kendo-react-buttons';
 import uuid from 'uuid';
 
-import { StructureLoader} from '../data/StructureLoader.jsx';
-import { FHIMStructureEditorForm }      from './FHIMStructureEditorForm.jsx';
-import { ColumnNameHeader} from './renderers.jsx';
+import {StructureLoader} from '../data/StructureLoader.jsx';
+import {FHIMStructureEditorForm }      from './FHIMStructureEditorForm.jsx';
+import {ColumnNameHeader} from './renderers.jsx';
+import {structurePageCount} from '../data/properties.jsx';
 
 
 
@@ -18,7 +19,7 @@ export class FHIMStructurePage extends React.Component {
         super(props);
         this.state = {
             resources: { data: [], total: 0, transactionId:''},
-            dataState: { take: 10, skip: 0 },
+            dataState: { take: structurePageCount, skip: 0 },
             queryDefinition: {searchBy: '', transactionId:'', newSearch: false},
             calendarFocused: null,
             searchOn: false,
@@ -225,7 +226,7 @@ export class FHIMStructurePage extends React.Component {
            queryDefinition: {searchBy:searchBy, transactionId:'',newSearch:true }
         });
         this.setState({searchOn: true});
-        this.setState({dataState: { take: 10, skip: 0 }});
+        this.setState({dataState: { take: structurePageCount, skip: 0 }});
     };
 
     clearSearchState = () => {
@@ -268,22 +269,20 @@ export class FHIMStructurePage extends React.Component {
 
      save = () => {
 
+     //   console.log("Save Data");
         const structureEntrys = this.state.resources.data;
-
+        const searchBy = this.state.queryDefinition.searchBy;   
+        const transactionId = this.state.queryDefinition.transactionId;   
       
         this.setState({
             structureEntrys: structureEntrys,
             dataItem: this.state.structureEntryInEdit,
             structureEntryInEdit: undefined,
-            dataFeatchError:false
+            dataFeatchError:false,
+            queryDefinition: {searchBy:searchBy, transactionId:transactionId,newSearch:true},
+            dataState: { take: structurePageCount, skip: 0 }
+            
         });
-        const searchBy = this.state.queryDefinition.searchBy;   
-        const transactionId = this.state.queryDefinition.transactionId;    
-        this.setState({
-           queryDefinition: {searchBy:searchBy, transactionId:transactionId,newSearch:true }
-        });
-
-        
       
     }
 

@@ -1,4 +1,4 @@
-import { baseURL } from './properties';
+import { baseURL,generateFunctionId } from './properties';
 import { infoMessage, errorMessage } from '../actions/notifications';
 
 export const updateTemplate = (dataItem) => {
@@ -50,10 +50,9 @@ export const insertTemplate = (dataItem) => {
 
 export const generateProfile = (dataItem) => {
     const id = dataItem.resource.id;
-    const generateFunction='';
-    const endpoint = baseURL + generateFunction +  id;
+    const endpoint = baseURL + generateFunctionId +  id;
         
-    console.log("Save AS " + endpoint);
+    console.log("Generate Profile " + endpoint);
     let win = window.open(endpoint, '_blank');
     win.focus();
 }

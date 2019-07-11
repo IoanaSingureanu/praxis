@@ -12,9 +12,10 @@ import { Input } from '@progress/kendo-react-inputs';
 import { TableNameHeader, ColumnNameHeader, Renderers } from './renderers.jsx';
 import { updateTemplate, insertTemplate, generateProfile } from '../data/StructureSaver.jsx';
 import { warnNotification } from '../actions/notifications';
+import {elementPageCount} from '../data/properties.jsx';
 
 let availableElements = [];
-const pageSize = 6;
+
 
 /*
     ClassName.MyOrg.MyImplementationGuide.MyTemplate.ProfileVersion
@@ -39,7 +40,9 @@ export class FHIMStructureEditorForm extends React.Component {
             templateTitle: '',
             templateVersion: '',
             value: '',
-            skip: 0
+            skip: 0,    
+            take: elementPageCount,
+            total: 0
 
         };
 
@@ -66,7 +69,7 @@ export class FHIMStructureEditorForm extends React.Component {
             structureName = "Template";
         }
         const tableHeader = structureName + ": " + structureEntry[0].resource.name;
-
+        {this.initWidget(structureEntry)}
         return (
 
             <div className="content-container">
@@ -80,21 +83,21 @@ export class FHIMStructureEditorForm extends React.Component {
                         vertical: "center"
                     }}
                     popupClass={'popup-content'} >
-                    {this.initWidget(structureEntry)}
+                  
 
 
                     <div className="k-form" align="center">
 
                         <Grid
                             style={{ backgroundColor: "rgb(227, 231, 237)", width: '950px' }}
-                            rowHeight={pageSize}
-                            data={availableElements.slice(this.state.skip, this.state.skip + pageSize)}
-                            pageSize={pageSize}
-                            total={availableElements.length}
+                            data={availableElements.slice(this.state.skip, this.state.take + this.state.skip)}
+                            pageSize={this.state.take}
                             skip={this.state.skip}
+                            take={this.state.take}
+                            total={this.state.total}
                             pageable={true}
                             onPageChange={this.pageChange}
-                            resizable={true} s
+                            resizable={true} 
                             onItemChange={this.itemChange}
                             editField="inEdit" >
 
@@ -140,10 +143,6 @@ export class FHIMStructureEditorForm extends React.Component {
             "A new template requires an implementation guide,  a responsible organization, a template name, and a template version.";
         let structureEntry = this.state.resourceInEdit;
         let res = structureEntry.resource;
-
-        if (!this.validateSaveStructure(true)) {
-            return;
-        }
 
         structureEntry.resource.name = this.buildTemplateName(res);
 
@@ -312,7 +311,8 @@ export class FHIMStructureEditorForm extends React.Component {
     initWidget = (structureEntry) => {
 
         availableElements = [];
-        this.state.skip = 0;
+        
+        this.state.total = 0;
         if (structureEntry[0] && structureEntry[0].resource.snapshot && structureEntry[0].resource.snapshot) {
             this.state.data = structureEntry[0].resource.snapshot.element;
             const extension = this.state.data[0].extension;
@@ -325,11 +325,14 @@ export class FHIMStructureEditorForm extends React.Component {
             else {
                 availableElements = this.state.data.slice(1, len);
             }
-            /* 
+            
+            this.state.total = availableElements.length;
+            /*
              console.log("INIT Widget Element Length: " + availableElements.length +
-            "  From " + this.state.data.length + " Scroll Window Size: " + pageSize
-                + " Skip: " + this.state.skip);
+            "  From " + this.state.data.length + " Scroll Window Size: " + this.state.take
+                + " Skip: " + this.state.skip + " Total: "+ this.state.total);
             */
+            
         }
         else {
 
@@ -538,16 +541,20 @@ export class FHIMStructureEditorForm extends React.Component {
         });
     }
 
-    pageChange(event) {
-        // console.log("Page Change Event: Skip: " + event.page.skip);
-
-        this.setState({
-            skip: event.page.skip
+    pageChange = (event) => {
+      
+    /*   
+         console.log("Page Change Event: Skip: " + event.page.skip +
+        " Take: "+event.page.take);
+   */
+      this.setState({
+            skip: event.page.skip,
+            take: event.page.take
         });
     }
-
+    
     itemChange(event) {
-        // console.log("Item Change Event");
+        console.log("Item Change Event");
         event.dataItem[event.field] = event.value;
         this.setState({
             changes: true
