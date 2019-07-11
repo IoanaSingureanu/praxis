@@ -84,8 +84,6 @@ export class FHIMStructureEditorForm extends React.Component {
                     }}
                     popupClass={'popup-content'} >
                   
-
-
                     <div className="k-form" align="center">
 
                         <Grid
@@ -168,6 +166,7 @@ export class FHIMStructureEditorForm extends React.Component {
         clone.resource.id = '';
         clone.resource.type = clone.resource.type.replace('class', 'template');
         clone.resource.version = this.state.templateVersion;
+        clone.resource.title = this.state.templateTitle;
         clone.resource.name =   this.buildTemplateName(res);
         console.log("New Tempate  Name: " + clone.resource.name);
 
@@ -257,7 +256,7 @@ export class FHIMStructureEditorForm extends React.Component {
         {
             return entry.resource.title;
         }
-        console.log("Structure: "+entry.resource.name+ " Title is missing.")
+        console.log("Structure: "+entry.resource.title+ " Title is missing.")
         return "";
     }
 
@@ -289,7 +288,6 @@ export class FHIMStructureEditorForm extends React.Component {
             "  res.implicitRules-> " + res.implicitRules +
             "  res.title-> " + res.title +
             "  res.version-> " + res.version)
-
         return newName;
 
     }
@@ -417,13 +415,13 @@ export class FHIMStructureEditorForm extends React.Component {
             }
             errList += "'Implementation Guide'";
         }
-        if (!structureEntry.resource.type || structureEntry.resource.type === '') {
+        if (!structureEntry.resource.title || structureEntry.resource.title === '') {
             if (errList !== '') {
                 beginMessage = "Fields: "
                 endMessage = " are required."
                 errList += ", ";
             }
-            errList += "'Template Name'";
+            errList += "'Template Title'";
         }
 
         if (!structureEntry.resource.version || structureEntry.resource.version === '') {
@@ -434,7 +432,6 @@ export class FHIMStructureEditorForm extends React.Component {
             }
             errList += "'Template Version'";
         }
-
        
         if (errList !== '') {
             const err = beginMessage + errList + endMessage;

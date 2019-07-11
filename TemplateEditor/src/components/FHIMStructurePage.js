@@ -11,7 +11,6 @@ import {ColumnNameHeader} from './renderers.jsx';
 import {structurePageCount} from '../data/properties.jsx';
 
 
-
 export class FHIMStructurePage extends React.Component {
 
     offset = { left: 500, top: 50 };
@@ -52,23 +51,22 @@ export class FHIMStructurePage extends React.Component {
        
         <div>
            
-        <Input
+            <Input
                    style={{ width: '260px', height: '50px', valign: "bottom", backgroundColor:"white"} }   
-                 
-                    label="Structure Name"              
+                   label="Structure Name"              
                     minLength={1}
                     defaultValue =''
                     required={false}         
                     name="serchFilter"
                     onChange={this.onSearchChanged}>
-    
-           </Input>
+             </Input>
     
                 &nbsp;&nbsp;
            
-            <Button icon="search" onClick={this.onSearchClick} 
+             <Button icon="search" onClick={this.onSearchClick} 
                      style={{ height: '32px', valign: "bottom", weight: "bold" } }
-                     primary={true}>Search</Button>
+                     primary={true}>Search
+             </Button>
            
         
         </div>
@@ -153,7 +151,9 @@ export class FHIMStructurePage extends React.Component {
                 <br /><br />
               
                 {this.state.structureEntryInEdit &&
-                    <FHIMStructureEditorForm dataItem={this.state.structureEntryInEdit} save={this.save} cancel={this.cancel} />}
+                    
+                   <FHIMStructureEditorForm dataItem={this.state.structureEntryInEdit} save={this.save} cancel={this.cancel} />
+                }
                    
         </div>
     );
@@ -269,7 +269,7 @@ export class FHIMStructurePage extends React.Component {
 
      save = () => {
 
-     //   console.log("Save Data");
+      //  console.log("**  Save Data **");
         const structureEntrys = this.state.resources.data;
         const searchBy = this.state.queryDefinition.searchBy;   
         const transactionId = this.state.queryDefinition.transactionId;   
@@ -279,11 +279,12 @@ export class FHIMStructurePage extends React.Component {
             dataItem: this.state.structureEntryInEdit,
             structureEntryInEdit: undefined,
             dataFeatchError:false,
-            queryDefinition: {searchBy:searchBy, transactionId:transactionId,newSearch:true},
-            dataState: { take: structurePageCount, skip: 0 }
-            
+            queryDefinition: {searchBy:searchBy, transactionId:'',newSearch:true},            
+            dataState: { take: structurePageCount, skip: 0 },   
+            data: this.state.data,
+            searchOn: true        
         });
-      
+         this.forceUpdate();
     }
 
     cancel = () => {

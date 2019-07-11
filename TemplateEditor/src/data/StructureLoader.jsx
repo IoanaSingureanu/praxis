@@ -84,17 +84,13 @@ export class StructureLoader extends React.Component {
             ( sortDir !== this.sortDir))
         {
             this.initData(searchBy, sortColumn, sortDir);
-           
-            console.log("NEW SEARCH By:  "+searchBy);
-            console.log("NEW SEARCH URL: "+url);
+            console.log("NEW Page URL: "+url);
         }
         else if (this.pending || toODataString(this.props.dataState) === this.lastSuccess) {      
                  return;
         }
         else {
             url = this.getChunck(this.props.queryDefinition, this.props.dataState, sortColumn, sortDir);
-           
-            console.log("Next Page SEARCH By: "+searchBy, " TRANSACTION ID: "+transactionId);
             console.log("Next Page URL: "+url);
         }
         
