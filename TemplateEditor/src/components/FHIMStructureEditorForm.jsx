@@ -10,7 +10,7 @@ import { Input } from '@progress/kendo-react-inputs';
 
 
 import { TableNameHeader, ColumnNameHeader, Renderers } from './renderers.jsx';
-import { updateTemplate, insertTemplate, generateProfile } from '../data/StructureSaver.jsx';
+import { updateTemplateStructure, createTemplateStructure, generateProfile } from '../data/StructureSaver.jsx';
 import { warnNotification } from '../actions/notifications';
 import {elementPageCount} from '../data/properties.jsx';
 
@@ -43,9 +43,7 @@ export class FHIMStructureEditorForm extends React.Component {
             skip: 0,    
             take: elementPageCount,
             total: 0
-
         };
-
         this.pageChange = this.pageChange.bind(this);
         this.saveChanges = this.saveChanges.bind(this);
         this.cancelChanges = this.cancelChanges.bind(this);
@@ -85,7 +83,7 @@ export class FHIMStructureEditorForm extends React.Component {
                     popupClass={'popup-content'} >
                   
                     <div className="k-form" align="center">
-
+                  
                         <Grid
                             style={{ backgroundColor: "rgb(227, 231, 237)", width: '950px' }}
                             data={availableElements.slice(this.state.skip, this.state.take + this.state.skip)}
@@ -112,6 +110,7 @@ export class FHIMStructureEditorForm extends React.Component {
                             </GridToolbar>
 
                         </Grid>
+                      
                         <br />
                         <div align="left">
                             {this.structureDefinitionInputs(structureEntry[0])}
@@ -119,7 +118,7 @@ export class FHIMStructureEditorForm extends React.Component {
                         <div align="right">
                             {this.structureDefinitionActions()}
                         </div>
-
+                    
                     </div>
 
                 </Popup>
@@ -151,7 +150,7 @@ export class FHIMStructureEditorForm extends React.Component {
         else if (this.isObjectTemplateType(structureEntry)) {
             // Update
             // console.log("Update Tempate  Name: " + structureEntry.resource.name);
-            updateTemplate(structureEntry);
+            updateTemplateStructure(structureEntry);
         }
 
         this.props.save();
@@ -170,12 +169,8 @@ export class FHIMStructureEditorForm extends React.Component {
         clone.resource.name =   this.buildTemplateName(res);
         console.log("New Tempate  Name: " + clone.resource.name);
 
-        structureEntry = insertTemplate(clone);
+        structureEntry = createTemplateStructure(clone);
 
-
-        this.setState({
-            searchOn: true
-        });
         return clone;
 
     };
@@ -269,8 +264,6 @@ export class FHIMStructureEditorForm extends React.Component {
         console.log("Structure: "+entry.resource.name+ " Version is missing.")
         return "";
     }
-
-
    
     buildTemplateName = (res) => {
         let className = this.getElementName(res.name, classNameIx);
@@ -303,7 +296,6 @@ export class FHIMStructureEditorForm extends React.Component {
       //  console.log("Get Element: " + name + " ix: " + ix + " Result: " + element);
         return element;
     }
-
 
 
     initWidget = (structureEntry) => {
@@ -393,8 +385,6 @@ export class FHIMStructureEditorForm extends React.Component {
         return this.enableInputFields();
     }
 
-
-
     validateSaveStructure = (showError) => {
 
         const structureEntry = this.state.resourceInEdit;
@@ -402,7 +392,6 @@ export class FHIMStructureEditorForm extends React.Component {
         let errList = '';
         let beginMessage = "Field: "
         let endMessage = " is required. "
-
 
         if (!structureEntry.resource.publisher || structureEntry.resource.publisher === '') {
             errList += "'Organization Name'";
@@ -450,13 +439,11 @@ export class FHIMStructureEditorForm extends React.Component {
 
     };
 
-
     onChange(e) {
         this.setState({ value: e.target.value });
     };
 
     onOrganizationNameChange = (e) => {
-
         const organizationName = e.target.value;
         this.setState({ organizationName: organizationName });
 
@@ -466,7 +453,6 @@ export class FHIMStructureEditorForm extends React.Component {
     };
 
     onImplementationGuideChange = (e) => {
-
         const implementationGuide = e.target.value;
         this.setState({ implementationGuide: implementationGuide });
         let structureEntry = this.state.resourceInEdit;
@@ -475,7 +461,6 @@ export class FHIMStructureEditorForm extends React.Component {
     };
 
     onTemplateTitleChange = (e) => {
-
         const templateTitle = e.target.value;
         this.setState({ templateTitle: templateTitle });
         let structureEntry = this.state.resourceInEdit;
@@ -492,7 +477,6 @@ export class FHIMStructureEditorForm extends React.Component {
 
 
     rowRender = (trElement, props) => {
-
         const dataItem = props.dataItem;
         const resources = this.state.data.slice();
         const index = resources.findIndex(p => p.id === dataItem.id);
@@ -674,8 +658,8 @@ const mapStateToProps = (state, props) => ({
 });
 
 const mapDispatchToProps = (dispatch, props) => ({
-    updateTemplate: (structureEntry) => dispatch(updateTemplate(structureEntry)),
-    insertTemplate: (structureEntry) => dispatch(insertTemplate(structureEntry))
+    updateTemplateStructure: (structureEntry) => dispatch(updateTemplateStructure(structureEntry)),
+    createTemplateStructure: (structureEntry) => dispatch(createTemplateStructure(structureEntry))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(FHIMStructureEditorForm);

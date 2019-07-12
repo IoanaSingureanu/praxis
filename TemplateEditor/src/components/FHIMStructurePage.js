@@ -20,7 +20,6 @@ export class FHIMStructurePage extends React.Component {
             resources: { data: [], total: 0, transactionId:''},
             dataState: { take: structurePageCount, skip: 0 },
             queryDefinition: {searchBy: '', transactionId:'', newSearch: false},
-            calendarFocused: null,
             searchOn: false,
             structureEntryInEdit: undefined,
             structureEntrys: undefined,
@@ -83,9 +82,7 @@ export class FHIMStructurePage extends React.Component {
                     {...this.state.dataState}
                     {...this.state.resources}
                     onDataStateChange={this.dataStateChange}
-                 
                     style={{backgroundColor:"rgb(227, 231, 237)"}}
-                                    
                     onRowClick={(e) => {
                         this.setState({ structureEntryInEdit: this.cloneStructure(e.dataItem) })
                     }} 
@@ -133,17 +130,14 @@ export class FHIMStructurePage extends React.Component {
 
                 </Grid>
                 <div>
-                
                 {
-                  (this.state.searchOn) ? (
-                    
-                       <StructureLoader
+                    (this.state.searchOn) ? 
+                    ( <StructureLoader
                           dataState={this.state.dataState}
                           onDataRecieved={this.dataRecieved} 
                           queryDefinition={this.state.queryDefinition}  
-                          sort={this.state.sort}                       
-                        />)  : (<p></p>)
-                       
+                          sort={this.state.sort} />
+                    )  :  (<p></p>)
                 }
                 {this.clearSearchState()}
                 </div>
@@ -152,20 +146,20 @@ export class FHIMStructurePage extends React.Component {
               
                 {this.state.structureEntryInEdit &&
                     
-                   <FHIMStructureEditorForm dataItem={this.state.structureEntryInEdit} save={this.save} cancel={this.cancel} />
+                   <FHIMStructureEditorForm 
+                      dataItem={this.state.structureEntryInEdit} save={this.save} cancel={this.cancel} 
+                   />
                 }
                    
         </div>
     );
     
-
     dataStateChange = (e) => {
       
         this.setState({
             ...this.state,
             dataState: e.data
         });
-        
 
     }
 
@@ -188,11 +182,6 @@ export class FHIMStructurePage extends React.Component {
             data: this.state.data,
             skip: event.page.skip
         });
-    }
-
-
-    onCalendarFocusChange = (calendarFocused) => {
-        this.setState(() => ({ calendarFocused }));
     }
 
     onRowFocusChange = (e) => {
@@ -231,7 +220,7 @@ export class FHIMStructurePage extends React.Component {
 
     clearSearchState = () => {
 
-        this.setState.newSearch = false;
+       this.setState.newSearch = false;
     };
 
     clearStatusMsg = () => {
@@ -267,9 +256,12 @@ export class FHIMStructurePage extends React.Component {
         
     }
 
-     save = () => {
+    refreshPage = () =>{ 
+        window.location.reload(); 
+    }
 
-      //  console.log("**  Save Data **");
+     save = () => {
+      
         const structureEntrys = this.state.resources.data;
         const searchBy = this.state.queryDefinition.searchBy;   
         const transactionId = this.state.queryDefinition.transactionId;   
@@ -279,12 +271,16 @@ export class FHIMStructurePage extends React.Component {
             dataItem: this.state.structureEntryInEdit,
             structureEntryInEdit: undefined,
             dataFeatchError:false,
-            queryDefinition: {searchBy:searchBy, transactionId:'',newSearch:true},            
             dataState: { take: structurePageCount, skip: 0 },   
             data: this.state.data,
-            searchOn: true        
+            searchOn: true
         });
-         this.forceUpdate();
+
+        console.log("Search BY BY: "+searchBy)
+        this.setState({
+      
+            queryDefinition: {searchBy:searchBy, transactionId:transactionId,newSearch:false }
+            });
     }
 
     cancel = () => {

@@ -1,7 +1,7 @@
 import { baseURL,generateFunctionId } from './properties';
 import { infoMessage, errorMessage } from '../actions/notifications';
 
-export const updateTemplate = (dataItem) => {
+export const updateTemplateStructure = (dataItem) => {
     const id = dataItem.resource.id;
     const endpoint = baseURL + id + "?_format=json";
     const jsonObj = JSON.stringify(dataItem.resource);
@@ -25,7 +25,7 @@ export const updateTemplate = (dataItem) => {
         });
 }
 
-export const insertTemplate = (dataItem) => {
+export const createTemplateStructure = (dataItem) => {
     const endpoint = baseURL + "?_format=json";
     const jsonObj = JSON.stringify(dataItem.resource);
 
